@@ -1,0 +1,135 @@
+{% set P = {'phone1':'+91 98746 05022','phone2':'+91 70037 24906','insta':'falconfitness.kolkata'} %}
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Terms &amp; Refund Policy — Falcon Fitness</title>
+<meta name="robots" content="index,follow">
+<link rel="icon" type="image/png" href="{{ url_for('static', filename='img/favicon-crest.png') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v={{ av('css/style.css') }}">
+</head>
+<body class="legal-page">
+<div class="grain" aria-hidden="true"></div>
+<div class="vignette" aria-hidden="true"></div>
+
+<header class="nav is-stuck">
+  <div class="nav-inner">
+    <a class="brand" href="/" aria-label="Falcon Fitness home">
+      <img draggable="false" src="{{ url_for('static', filename='img/falcon-crest-cream.png') }}" alt="" class="brand-mark">
+      <span class="brand-type"><b>FALCON</b><i>FITNESS</i></span>
+    </a>
+    <nav class="nav-links" aria-label="Primary">
+      <a href="/">Home</a>
+      <a href="/#membership">Membership</a>
+      <a href="/#visit">Visit</a>
+    </nav>
+  </div>
+</header>
+
+<main class="legal wrap">
+  <p class="kicker">Legal</p>
+  <h1 class="h2">Terms &amp; Refund Policy</h1>
+  <p class="legal-meta mono">Last updated: {{ today }}</p>
+
+  <p class="legal-lead">These terms cover membership at Falcon Fitness, payments,
+    freezing, cancellation and refunds. Please read them before you join.</p>
+
+  <h2>1. The club</h2>
+  <p><b>{{ b.name }}</b><br>{{ b.address }}<br>
+     Phone: {{ b.phone }} / {{ b.phone2 }}</p>
+
+  <h2>2. Membership and admission</h2>
+  <ul>
+    <li>A one-time admission fee of <b>₹500</b> applies to the monthly General membership only.</li>
+    <li>All longer durations (3, 4, 6 and 12 months) carry <b>no admission fee</b>.</li>
+    <li>Membership is personal and may not be transferred to another person.</li>
+    <li>You must be 18 or older, or have a parent or guardian's consent, to join.</li>
+  </ul>
+
+  <h2>3. Prices</h2>
+  <p>The rate card is shown on the Membership section to signed-in members, and is
+    the price in force at the time of joining. Prices may change for new
+    memberships; an active membership is not repriced mid-term. Visitors who are
+    not signed in can see the plans listed without rates and can ask us for the
+    current card.</p>
+
+  <h2>4. Member accounts</h2>
+  <p>Members are given a login so they can see their own membership, payments and
+    attendance. Keep your password to yourself: anything done through your account
+    is treated as done by you. Tell us at once if you think someone else has your
+    password and we will reset it. We may disable an account when a membership
+    lapses; your history is kept and comes back when you rejoin.</p>
+
+  <h2>5. Payment</h2>
+  <p>Membership fees are paid at the club by cash, UPI or card. We do not take
+    payment through this website. A receipt will be issued for every payment —
+    please keep it.</p>
+
+  <h2>6. Refunds</h2>
+  <ul>
+    <li>Membership fees are <b>non-refundable</b> once your membership period has
+      begun, including where a membership is revoked for uploading a receipt that
+      was not a genuine payment of your own.</li>
+    <li>If you cancel <b>before</b> your first session, a full refund is given.</li>
+    <li>If the club permanently closes, any unused whole months of a prepaid
+      membership are refunded on a pro-rata basis.</li>
+    <li>Day passes are non-refundable once the session has started.</li>
+    <li>Personal training sessions that are not used within the purchased period
+      expire at the end of that period.</li>
+  </ul>
+
+  <h2>7. Freezing a membership</h2>
+  <p>Memberships may be frozen for medical reasons or travel, for a minimum of
+    15 days and a maximum of 60 days, by speaking to us in person. A freeze must
+    be requested before the period it covers begins.</p>
+
+  <h2>8. Conduct and safety</h2>
+  <ul>
+    <li>Re-rack your weights and wipe down equipment after use.</li>
+    <li>Shoes must be worn on the training floor.</li>
+    <li>Follow coach instructions and do not attempt lifts beyond your ability
+      without supervision.</li>
+    <li>We reserve the right to end a membership without refund for abusive
+      behaviour, wilful damage to equipment, or bringing prohibited items onto
+      the premises.</li>
+  </ul>
+
+  <h2>9. Risk and liability</h2>
+  <p>Physical training carries inherent risk. By joining, you confirm you are fit
+    to exercise and have declared any relevant medical conditions to us. If you
+    have a heart condition, uncontrolled blood pressure, are pregnant, or are
+    recovering from surgery, get medical clearance first and tell us before
+    training. The club is not liable for injury resulting from exercising against
+    medical advice or from misuse of equipment.</p>
+
+  <h2>10. Property</h2>
+  <p>Please do not leave valuables in the changing area. The club is not
+    responsible for lost or stolen personal property.</p>
+
+  <h2>11. Opening hours</h2>
+  <p>Falcon Fitness is open <b>every day from 6:30 am to 11:00 pm</b>, including
+    Sundays and public holidays. The website shows the current status live. We may
+    close the club temporarily for maintenance, festivals or emergencies, and will
+    give notice where possible.</p>
+
+  <h2>12. Contact</h2>
+  <p>Questions about these terms or a refund? Call
+    <a href="tel:{{ b.phone | replace(' ','') }}">{{ b.phone }}</a> or message
+    <a href="https://www.instagram.com/{{ b.instagram }}/" target="_blank" rel="noopener">@{{ b.instagram }}</a>.</p>
+
+  <h2>13. Governing law</h2>
+  <p>These terms are governed by the laws of India. Disputes fall under the
+    jurisdiction of the courts of Kolkata, West Bengal.</p>
+
+  <p class="legal-foot mono">Questions about this policy? Call {{ b.phone }}.</p>
+</main>
+
+<footer class="foot">
+  <div class="wrap foot-base">
+    <span class="mono">© {{ today }} {{ b.name }} · Kestopur, Kolkata</span>
+    <span class="mono"><a href="/">Home</a> · <a href="/privacy">Privacy</a></span>
+  </div>
+</footer>
+</body>
+</html>

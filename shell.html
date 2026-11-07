@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark" class="no-js">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block title %}Falcon Fitness{% endblock %}</title>
+<meta name="robots" content="noindex">
+<script>document.documentElement.className=document.documentElement.className.replace("no-js","");</script>
+<link rel="icon" type="image/png" href="{{ url_for('static', filename='img/favicon-crest.png') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v={{ av('css/style.css') }}">
+</head>
+<body class="app-page">
+<div class="grain" aria-hidden="true"></div>
+<div class="vignette" aria-hidden="true"></div>
+
+<header class="nav is-stuck">
+  <div class="nav-inner">
+    <a class="brand" href="/" aria-label="Falcon Fitness home">
+      <img draggable="false" src="{{ url_for('static', filename='img/falcon-crest-cream.png') }}" alt="" class="brand-mark">
+      <span class="brand-type"><b>FALCON</b><i>FITNESS</i></span>
+    </a>
+    <nav class="nav-links" id="navLinks" aria-label="Primary">
+      <a href="/">Home</a>
+      {% if user %}
+        <a href="/account">My account</a>
+        {% if is_admin %}<a href="/admin">Admin</a>{% endif %}
+        <a href="#" onclick="document.getElementById('logoutForm').submit();return false;">Sign out</a>
+        <form id="logoutForm" method="post" action="/logout" style="display:none"></form>
+      {% else %}
+        <a href="/#membership">Membership</a>
+        <a href="/#visit">Visit</a>
+        <a href="/login">Member login</a>
+      {% endif %}
+    </nav>
+
+    {# Without this the menu links are off-screen on a phone and there is no way
+       to reach "Sign out". The home page has had one all along; every other page
+       uses this shell and did not. #}
+    <button class="burger" id="burger" aria-label="Menu" aria-expanded="false">
+      <i></i><i></i>
+    </button>
+  </div>
+</header>
+
+{% block body %}{% endblock %}
+
+<div class="toasts" id="toasts" aria-live="polite"></div>
+<script src="{{ url_for('static', filename='js/app.js') }}?v={{ av('js/app.js') }}"></script>
+</body>
+</html>

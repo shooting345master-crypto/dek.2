@@ -1,0 +1,143 @@
+{% extends "shell.html" %}
+{% block title %}Membership registration — Falcon Fitness{% endblock %}
+
+{% block body %}
+<main class="wrap app-main">
+  <header class="app-head">
+    <div>
+    <p class="kicker">Self-service</p>
+    <h1 class="h3">Register your membership</h1>
+    <p class="app-sub">For members who have <b>already paid the owner in person</b>.
+      Enter your details, upload your receipt, and you will get a digital membership
+      card once the owner approves it.</p>
+      </div>
+  </header>
+
+  <ol class="reg-steps mono">
+    <li class="is-on">1 · Your details</li>
+    <li>2 · Verify phone</li>
+    <li>3 · Owner approves</li>
+    <li>4 · Card issued</li>
+  </ol>
+
+  {% if err %}<div class="banner err">{{ err }}</div>{% endif %}
+
+  <section class="panel-card">
+    <p class="panel-note">Have you <b>not</b> paid yet? Do not register here — use the
+      enquiry form or call us. This form is only for people who have already paid at
+      the club and have a receipt.</p>
+
+    <form method="post" action="/register" enctype="multipart/form-data" class="reg-form">
+      <input type="hidden" name="_csrf" value="{{ csrf }}">
+
+      <h4 class="sub-head">About you</h4>
+      <div class="inline-grid">
+        <label class="field"><span>Full name</span>
+          <input name="name" value="{{ form.name or '' }}" required minlength="3"
+                 placeholder="As on your receipt"></label>
+        <label class="field"><span>Email</span>
+          <input name="email" type="email" value="{{ form.email or '' }}" required
+                 placeholder="you@example.com"></label>
+        <label class="field"><span>Mobile number</span>
+          <input name="phone" type="tel" inputmode="numeric" value="{{ form.phone or '' }}"
+                 required placeholder="9876543210" pattern="[0-9 +-]{10,14}">
+          <small class="hint-sm">10 digits. You will get a code on this number.</small></label>
+      </div>
+
+      <h4 class="sub-head">What you paid for</h4>
+      <div class="inline-grid">
+        <label class="field"><span>Plan</span>
+          <select name="plan_code" required id="planSel">
+            <option value="">— choose the plan you paid for —</option>
+            {% for grp, rows in groups.items() %}
+              {% for p in rows %}
+                <option value="{{ p.code }}" data-price="{{ p.price|int }}"
+                        data-adm="{{ p.admission|int }}"
+                        data-months="{{ p.months }}"
+                        {{ 'selected' if form.plan_code == p.code }}>
+                  {{ grp.replace('_',' ').title() }} · {{ p.label }} · ₹{{ p.price|money }}{% if p.admission %} + ₹{{ p.admission|money }} admission{% endif %} · {{ p.months }} month{{ 's' if p.months != 1 }}
+                </option>
+              {% endfor %}
+            {% endfor %}
+          </select></label>
+        <label class="field"><span>Amount you paid (₹)</span>
+          <input name="amount" id="amtIn" type="number" min="1" step="1"
+                 value="{{ form.amount or '' }}" required>
+          <small class="hint-sm" id="amtHint">Pick a plan and this fills in for you.</small></label>
+        <label class="field"><span>Date you paid</span>
+          <input name="paid_on" type="date" value="{{ form.paid_on or '' }}"
+                 max="{{ now_date }}"></label>
+        <label class="field"><span>How you paid</span>
+          <select name="method">
+            <option value="upi" {{ 'selected' if form.method == 'upi' }}>UPI</option>
+            <option value="cash" {{ 'selected' if form.method == 'cash' }}>Cash</option>
+            <option value="card" {{ 'selected' if form.method == 'card' }}>Card</option>
+          </select></label>
+        <label class="field"><span>UPI reference / UTR <em class="opt">optional</em></span>
+          <input name="utr" value="{{ form.utr or '' }}" placeholder="12-digit UTR">
+          <small class="hint-sm">Speeds up approval — the owner can match it instantly.</small></label>
+      </div>
+
+      <h4 class="sub-head">Your receipt</h4>
+      <label class="field file-field">
+        <span>Photo or screenshot of your receipt</span>
+        <input name="receipt" type="file" accept="image/*" required id="receiptIn">
+        <small class="hint-sm">JPG, PNG, WEBP or HEIC · up to 8 MB · a clear screenshot
+          from your UPI app or a photo of the paper receipt is fine. Make sure the
+          <b>amount</b> and the <b>date</b> are visible.</small>
+      </label>
+      <div class="file-preview" id="filePreview" hidden>
+        <img id="fileThumb" alt="Your receipt">
+        <div class="file-meta mono" id="fileMeta"></div>
+      </div>
+
+      <p class="panel-note">By registering you confirm the receipt is your own payment,
+        and you agree to the <a href="/terms">terms</a> and
+        <a href="/privacy">privacy policy</a>. Your receipt is visible only to you
+        and to the club owner.</p>
+
+      <button class="btn btn-primary btn-block" type="submit">Continue — verify my phone</button>
+    </form>
+  </section>
+
+  <p class="app-foot mono">Already have an account? <a href="/login">Sign in</a></p>
+</main>
+
+<script>
+(function () {
+  var sel = document.getElementById('planSel');
+  var amt = document.getElementById('amtIn');
+  var hint = document.getElementById('amtHint');
+  function sync() {
+    var o = sel.options[sel.selectedIndex];
+    if (!o || !o.dataset.price) return;
+    var price = parseInt(o.dataset.price, 10);
+    var adm = parseInt(o.dataset.adm || '0', 10);
+    var total = price + adm;
+    if (!amt.value || amt.dataset.auto === '1') {
+      amt.value = total;
+      amt.dataset.auto = '1';
+    }
+    hint.textContent = adm
+      ? '₹' + price + ' plan + ₹' + adm + ' one-time admission = ₹' + total
+      : '₹' + price + ' for ' + o.dataset.months + ' month(s).';
+  }
+  sel.addEventListener('change', sync);
+  amt.addEventListener('input', function () { amt.dataset.auto = '0'; });
+
+  var inp = document.getElementById('receiptIn');
+  var box = document.getElementById('filePreview');
+  var thumb = document.getElementById('fileThumb');
+  var meta = document.getElementById('fileMeta');
+  inp.addEventListener('change', function () {
+    var f = inp.files && inp.files[0];
+    if (!f) { box.hidden = true; return; }
+    box.hidden = false;
+    meta.textContent = f.name + ' · ' + (f.size / 1024 / 1024).toFixed(2) + ' MB';
+    var r = new FileReader();
+    r.onload = function (e) { thumb.src = e.target.result; };
+    r.readAsDataURL(f);
+  });
+})();
+</script>
+{% endblock %}

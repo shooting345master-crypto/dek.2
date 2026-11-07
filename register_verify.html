@@ -1,0 +1,57 @@
+{% extends "shell.html" %}
+{% block title %}Verify your phone — Falcon Fitness{% endblock %}
+
+{% block body %}
+<main class="wrap app-main">
+  <header class="app-head">
+    <div>
+    <p class="kicker">Step 2 of 4</p>
+    <h1 class="h3">Verify your phone</h1>
+    <p class="app-sub">Type the 6-digit code sent to the number ending
+      <b>{{ user.phone[-4:] if user.phone else '—' }}</b>. This proves the numbers on
+      the receipt belong to you.</p>
+      </div>
+  </header>
+
+  <ol class="reg-steps mono">
+    <li>1 · Your details</li>
+    <li class="is-on">2 · Verify phone</li>
+    <li>3 · Owner approves</li>
+    <li>4 · Card issued</li>
+  </ol>
+
+  {% if err %}<div class="banner err">{{ err }}</div>{% endif %}
+  {% with msgs = get_flashed_messages(with_categories=true) %}
+    {% for cat, m in msgs %}<div class="banner {{ 'ok' if cat == 'ok' else 'err' }}">{{ m }}</div>{% endfor %}
+  {% endwith %}
+
+  {% if show_code %}
+  <div class="code-box">
+    <p class="mono tiny">{% if sms_ready %}SMS failed — showing the code instead{% else %}No SMS provider is configured yet{% endif %}</p>
+    <p class="code-value mono">{{ show_code }}</p>
+    <p class="mono tiny">Valid for 10 minutes. The owner can see this code in the
+      admin panel too, so you can also just call the club.</p>
+  </div>
+  {% elif sms_ready %}
+  <div class="banner ok">An SMS with your 6-digit code is on its way.</div>
+  {% endif %}
+
+  <section class="panel-card">
+    <form method="post" action="/register/verify" class="reg-form">
+      <input type="hidden" name="_csrf" value="{{ csrf }}">
+      <label class="field"><span>6-digit code</span>
+        <input name="code" inputmode="numeric" pattern="[0-9]{6}" maxlength="6"
+               autocomplete="one-time-code" required class="otp-input" autofocus
+               placeholder="000000"></label>
+      <button class="btn btn-primary btn-block" type="submit">Verify and finish</button>
+    </form>
+    <form method="post" action="/register/verify" class="inline" style="margin-top:14px">
+      <input type="hidden" name="_csrf" value="{{ csrf }}">
+      <input type="hidden" name="action" value="resend">
+      <button class="btn btn-ghost btn-sm" type="submit">Send a new code</button>
+    </form>
+  </section>
+
+  <p class="app-foot mono">Wrong number? <a href="/register">Start again</a></p>
+</main>
+{% endblock %}

@@ -1,0 +1,19 @@
+[Unit]
+Description=Falcon Fitness website
+After=network.target
+
+[Service]
+# umask 0007 = files readable by the web server, writable only by the site user
+UMask=0007
+User=falcon
+Group=falcon
+WorkingDirectory=/home/falcon/app/falcon-fitness
+# NOTE: do NOT set PATH to the venv alone -- that hides /usr/bin and the app
+# can no longer find g++ to (re)build its C++ engine. Always append the system paths.
+Environment="PATH=/home/falcon/app/falcon-fitness/venv/bin:/usr/local/bin:/usr/bin:/bin"
+ExecStart=/home/falcon/app/falcon-fitness/venv/bin/gunicorn --workers 3 --bind 127.0.0.1:8000 --access-logfile - --error-logfile - app:app
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target

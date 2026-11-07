@@ -1,0 +1,48 @@
+# ---- Fly.io config ----------------------------------------------------------
+# fly launch --no-deploy --copy-config   → then  fly deploy
+app = "falcon-fitness"
+# NOTE ON REGION: Fly.io has no Kolkata region. The nearest are:
+#   bom = Mumbai  (~1,650 km, 30-45 ms from Kolkata)   <-- best choice
+#   del = Delhi   (~1,300 km, 30-40 ms)
+# For hosting physically IN Kolkata you need an Indian host such as
+# Hostinger / MilesWeb / AWS ap-south-1 with an Indian datacentre.
+primary_region = "bom"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  PORT = "8080"
+  FALCON_DB_PATH = "/data/falcon.db"
+  # Email notification for enquiries. Set the real values with:
+  #   fly secrets set FALCON_SMTP_HOST=... FALCON_SMTP_USER=... etc.
+  FALCON_RATE_PER_HOUR = "12"
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = "stop"   # scale to zero when idle → near-zero cost
+  auto_start_machines = true
+  min_machines_running = 0
+
+  [http_service.concurrency]
+    type = "requests"
+    soft_limit = 40
+    hard_limit = 60
+
+[[http_service.checks]]
+  interval = "30s"
+  timeout = "5s"
+  grace_period = "10s"
+  method = "GET"
+  path = "/healthz"
+
+# Persistent volume so bookings/leads survive restarts and redeploys.
+# SQLite cannot live on ephemeral storage — without this every deploy wipes data.
+[mounts]
+  source = "falcon_data"
+  destination = "/data"
+
+[[vm]]
+  size = "shared-cpu-1x"
+  memory = "256mb"

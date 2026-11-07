@@ -1,0 +1,247 @@
+{% extends "shell.html" %}
+{% block title %}My account — Falcon Fitness{% endblock %}
+{% block body %}
+<main class="wrap app-main">
+
+  <header class="app-head">
+    <div>
+      <p class="kicker">Member area</p>
+      <h1 class="h2">{{ user.name }}</h1>
+      <p class="app-sub mono">{{ user.email }}{% if user.phone %} · {{ user.phone }}{% endif %}</p>
+    </div>
+    <div class="app-head-right">
+      {% if card %}
+        <div class="status-pill {% if days_left is not none and days_left <= 7 %}is-warn{% else %}is-ok{% endif %}">
+          <span class="mono">Membership</span><b>Active</b></div>
+      {% elif reg and reg.status == 'pending' %}
+        <div class="status-pill is-warn"><span class="mono">Membership</span><b>Awaiting approval</b></div>
+      {% else %}
+        <div class="status-pill is-bad"><span class="mono">Membership</span><b>{{ mship_state | title }}</b></div>
+      {% endif %}
+    </div>
+  </header>
+
+  {% if user.must_change_pw %}
+    <div class="banner warn">
+      <b>Please change your starting password.</b>
+      The owner created this account for you — set your own password below.
+    </div>
+  {% endif %}
+  {% if msg %}<div class="banner ok">{{ msg }}</div>{% endif %}
+  {% if err %}<div class="banner err">{{ err }}</div>{% endif %}
+
+  <div class="app-grid">
+
+    {% if card %}
+    <section class="panel-card card-hero">
+      <h3>Your digital membership card</h3>
+      <div class="digi-card">
+        <div class="digi-top">
+          <img src="{{ url_for('static', filename='img/falcon-crest-cream.png') }}"
+               alt="" draggable="false" class="digi-crest">
+          <div>
+            <p class="digi-brand mono">FALCON FITNESS</p>
+            <p class="digi-sub mono">Kestopur · Kolkata</p>
+          </div>
+          <span class="digi-live mono">LIVE</span>
+        </div>
+        <div class="digi-mid">
+          <p class="digi-name">{{ user.name }}</p>
+          <p class="digi-plan mono">{{ plan_label or card.plan_code }}</p>
+        </div>
+        <div class="digi-bot mono">
+          <div><span>MEMBER SINCE</span><b>{{ card.start_date }}</b></div>
+          <div><span>VALID UNTIL</span><b>{{ card.end_date }}</b></div>
+          <div><span>CARD NO.</span><b>{{ card.serial }}</b></div>
+        </div>
+      </div>
+      <p class="panel-note">Show this at the desk. It is checked against the membership
+        record every time it loads, so a card that has expired or been revoked will
+        stop working on its own.</p>
+    </section>
+    {% elif reg and reg.status == 'pending' %}
+    <section class="panel-card">
+      <h3>Your registration is waiting</h3>
+      <div class="banner warn">You registered for <b>{{ plan_label or reg.plan_code }}</b>
+        on {{ reg.created_at[:10] }}. The owner has to approve it before your card
+        appears — usually the same day.</div>
+      {% if reg.screen_score is not none %}
+        <p class="panel-note">Automatic receipt check:
+          <b>{{ reg.screen_score }}/100</b> — {{ reg.screen_verdict | replace('-', ' ') }}.
+          This is a screening aid, not a decision; the owner makes the final call.</p>
+      {% endif %}
+      <dl class="kv">
+        <div><dt>Plan</dt><dd>{{ plan_label or reg.plan_code }}</dd></div>
+        <div><dt>Amount declared</dt><dd>₹{{ reg.declared_amount | money }}</dd></div>
+        <div><dt>Paid on</dt><dd>{{ reg.declared_paid_on or '—' }}</dd></div>
+        <div><dt>Status</dt><dd><span class="pill pill-pending">pending</span></dd></div>
+      </dl>
+      <p class="panel-note">Your receipt: <a href="/receipt/{{ reg.id }}" target="_blank"
+        rel="noopener">view what you uploaded</a>. Only you and the owner can see it.</p>
+    </section>
+    {% elif reg and reg.status == 'rejected' %}
+    <section class="panel-card">
+      <h3>Registration not approved</h3>
+      <div class="banner err">The owner did not approve your registration.
+        {% if reg.admin_note %}Reason: {{ reg.admin_note }}{% endif %}</div>
+      <p class="panel-note">Call <a href="tel:{{ b.phone | replace(' ','') }}">{{ b.phone }}</a>
+        to sort it out, or <a href="/register">register again</a> with a clearer receipt.</p>
+    </section>
+    {% endif %}
+
+    <section class="panel-card">
+      <h3>Membership</h3>
+      {% if mship %}
+        <dl class="kv">
+          <div><dt>Plan</dt><dd>{{ plan_label or mship.plan_code }}</dd></div>
+          <div><dt>Started</dt><dd>{{ mship.start_date }}</dd></div>
+          <div><dt>Ends</dt><dd>{{ mship.end_date }}</dd></div>
+          <div><dt>Days left</dt><dd>{% if days_left is not none %}{{ days_left }}{% else %}—{% endif %}</dd></div>
+        </dl>
+        {% if days_left is not none and days_left <= 7 %}
+          <p class="panel-note">Your membership is nearly up. Call
+            <a href="tel:+919874605022">{{ b.phone }}</a> to renew.</p>
+        {% endif %}
+      {% else %}
+        <p class="panel-note">No membership is linked to your account yet.
+          Call <a href="tel:+919874605022">{{ b.phone }}</a> and we'll set it up.</p>
+      {% endif %}
+    </section>
+
+    <section class="panel-card">
+      <h3>Prices you pay</h3>
+      <p class="panel-note">Your member price list. These are not shown to
+        visitors who aren't signed in.</p>
+      <div class="mini-plans">
+        {% for grp, rows in groups.items() %}
+          <div class="mini-plan">
+            <b>{{ grp | replace('_',' ') | title }}</b>
+            <ul>
+              {% for p in rows %}
+                <li><span>{{ p.label }}{% if p.sessions %} · {{ p.sessions }} sessions{% endif %}</span>
+                    <em>₹{{ p.price | money }}{% if p.admission %} + ₹{{ p.admission | money }}{% endif %}</em></li>
+              {% endfor %}
+            </ul>
+          </div>
+        {% endfor %}
+      </div>
+    </section>
+
+    <section class="panel-card">
+      <h3>Payments</h3>
+      {% if payments %}
+        <table class="data-table">
+          <thead><tr><th>Date</th><th>Amount</th><th>Method</th><th>Note</th></tr></thead>
+          <tbody>
+          {% for p in payments %}
+            <tr><td>{{ p.paid_on }}</td><td>₹{{ p.amount | money }}</td>
+                <td>{{ p.method }}</td><td>{{ p.note or '—' }}</td></tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      {% else %}
+        <p class="panel-note">No payments recorded yet.</p>
+      {% endif %}
+    </section>
+
+    <section class="panel-card">
+      <h3>Attendance</h3>
+      {% if attendance %}
+        <table class="data-table">
+          <thead><tr><th>Check-in</th><th>Note</th></tr></thead>
+          <tbody>
+          {% for a in attendance %}
+            <tr><td>{{ a.checkin_at[:16] | replace('T',' ') }}</td><td>{{ a.note or '—' }}</td></tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      {% else %}
+        <p class="panel-note">No check-ins yet. The owner marks these at the desk.</p>
+      {% endif %}
+    </section>
+
+    <section class="panel-card">
+      <h3>Leave a review</h3>
+      <p class="panel-note">Your review appears on the website once the owner approves it.</p>
+      <form method="post" class="stack-form">
+        <input type="hidden" name="_csrf" value="{{ csrf }}">
+        <input type="hidden" name="action" value="review">
+        <label class="field"><span>Rating</span>
+          <select name="rating">
+            <option value="5">5 — Excellent</option>
+            <option value="4">4 — Good</option>
+            <option value="3">3 — Average</option>
+            <option value="2">2 — Poor</option>
+            <option value="1">1 — Bad</option>
+          </select>
+        </label>
+        <label class="field"><span>Your review</span>
+          <textarea name="body" rows="4" required minlength="15"
+                    placeholder="What was training here like? Be specific and honest."></textarea>
+        </label>
+        <button class="btn btn-primary" type="submit">Submit review</button>
+      </form>
+
+      {% if my_reviews %}
+        <table class="data-table" style="margin-top:18px">
+          <thead><tr><th>Your review</th><th>Status</th></tr></thead>
+          <tbody>
+          {% for r in my_reviews %}
+            <tr><td>{{ r.body[:90] }}{% if r.body|length > 90 %}…{% endif %}</td>
+                <td><span class="pill pill-{{ r.status }}">{{ r.status }}</span></td></tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      {% endif %}
+    </section>
+
+    <section class="panel-card">
+      <h3>Change password</h3>
+      <p class="panel-note">Changing your password sends a 6-digit code to the phone on
+        your account. You need that code to finish.</p>
+
+      {% if pw_stage == 'verify' %}
+        {% if pw_code %}
+          <div class="code-box">
+            <p class="mono tiny">No SMS provider configured — here is your code</p>
+            <p class="code-value mono">{{ pw_code }}</p>
+          </div>
+        {% endif %}
+        <form method="post" class="stack-form">
+          <input type="hidden" name="_csrf" value="{{ csrf }}">
+          <input type="hidden" name="action" value="password_confirm">
+          <label class="field"><span>6-digit code sent to your phone</span>
+            <input name="code" inputmode="numeric" pattern="[0-9]{6}" maxlength="6"
+                   required class="otp-input" autocomplete="one-time-code"></label>
+          <label class="field"><span>New password</span>
+            <input type="password" name="new_password" required minlength="8"
+                   autocomplete="new-password"></label>
+          <label class="field"><span>Repeat new password</span>
+            <input type="password" name="confirm_password" required minlength="8"
+                   autocomplete="new-password"></label>
+          <button class="btn btn-primary" type="submit">Confirm and change password</button>
+        </form>
+      {% else %}
+        <form method="post" class="stack-form">
+          <input type="hidden" name="_csrf" value="{{ csrf }}">
+          <input type="hidden" name="action" value="password_request">
+          <label class="field"><span>Current password</span>
+            <input type="password" name="current_password" required
+                   autocomplete="current-password"></label>
+          <button class="btn btn-primary" type="submit">Send me a code</button>
+        </form>
+        {% if not phone %}
+          <p class="panel-note" style="margin-top:10px">There is no phone number on your
+            account yet, so a code cannot be sent. Ask the owner to add one.</p>
+        {% endif %}
+      {% endif %}
+    </section>
+
+  </div>
+
+  <p class="app-foot mono">
+    Need something changed? Call {{ b.phone }} or email
+    <a href="mailto:{{ b.trainer_email }}">{{ b.trainer_email }}</a>.
+  </p>
+</main>
+{% endblock %}

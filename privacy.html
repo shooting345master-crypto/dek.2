@@ -1,0 +1,155 @@
+{% set P = {'phone1':'+91 98746 05022','phone2':'+91 70037 24906','insta':'falconfitness.kolkata'} %}
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Privacy Policy — Falcon Fitness</title>
+<meta name="robots" content="index,follow">
+<link rel="icon" type="image/png" href="{{ url_for('static', filename='img/favicon-crest.png') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v={{ av('css/style.css') }}">
+</head>
+<body class="legal-page">
+<div class="grain" aria-hidden="true"></div>
+<div class="vignette" aria-hidden="true"></div>
+
+<header class="nav is-stuck">
+  <div class="nav-inner">
+    <a class="brand" href="/" aria-label="Falcon Fitness home">
+      <img draggable="false" src="{{ url_for('static', filename='img/falcon-crest-cream.png') }}" alt="" class="brand-mark">
+      <span class="brand-type"><b>FALCON</b><i>FITNESS</i></span>
+    </a>
+    <nav class="nav-links" aria-label="Primary">
+      <a href="/">Home</a>
+      <a href="/#membership">Membership</a>
+      <a href="/#visit">Visit</a>
+    </nav>
+  </div>
+</header>
+
+<main class="legal wrap">
+  <p class="kicker">Legal</p>
+  <h1 class="h2">Privacy Policy</h1>
+  <p class="legal-meta mono">Last updated: {{ today }}</p>
+
+  <p class="legal-lead">Falcon Fitness respects your privacy. This page explains
+    what we collect when you contact us through this website, why we collect it,
+    and what rights you have over it.</p>
+
+  <h2>1. Who we are</h2>
+  <p>
+    <b>{{ b.name }}</b><br>
+    {{ b.address }}<br>
+    Phone: {{ b.phone }} / {{ b.phone2 }}
+  </p>
+
+  <h2>2. What we collect</h2>
+  <p>When you submit the enquiry form on this website, we collect:</p>
+  <ul>
+    <li><b>Your name</b> — so we know who to ask for.</li>
+    <li><b>Your phone number</b> — so we can call you back.</li>
+    <li><b>Your email address</b> — optional, only if you choose to give it.</li>
+    <li><b>Which package you're interested in</b> and any message you write.</li>
+  </ul>
+  <p>We also record an anonymised, salted hash of your IP address purely to stop
+    automated spam submissions. The raw IP address is never stored.</p>
+  <p>We do <b>not</b> use advertising trackers, we do <b>not</b> use third-party
+    analytics, and we do <b>not</b> set marketing cookies on this website.</p>
+
+  <h2>3. Why we collect it</h2>
+  <p>For one purpose: to reply to your enquiry and answer your questions.
+    We do not sell, rent or share your details with anyone.</p>
+
+  <h2>4. If you have a member account</h2>
+  <p>Members can sign in to see their own membership, payments and attendance.
+    For that we store your <b>name, email address, phone number, plan, start and
+    end dates, and payment and attendance records</b>. Passwords are stored only
+    as a one-way hash — nobody at the club, including the owner, can read your
+    password.</p>
+  <p>Seeing your own prices requires signing in; that is why rates are not shown
+    to visitors who are not members. We never sell or share this data, and we do
+    not use it for advertising. Ask us to close your account and we will delete
+    the login and personal details; payment and attendance history that we are
+    required to keep for accounting is retained, anonymised where possible.</p>
+
+  <h2>5. Membership registration, receipts and your phone number</h2>
+  <p>If you pay at the club and then register on this website, we also collect:</p>
+  <ul>
+    <li>your <b>mobile number</b>, so we can send you a one-time code;</li>
+    <li>an <b>image of your payment receipt</b> — a screenshot from your UPI app or a
+      photo of the paper receipt;</li>
+    <li>the <b>amount, date and method</b> of that payment, and the UPI reference if
+      you give it;</li>
+    <li>the result of the <b>automatic check we run on that image</b> (a score and a
+      short list of what the check found), so the owner can review it accurately.</li>
+  </ul>
+  <p><b>Who can see your receipt image:</b> exactly two people — you, and the club
+    owner. It is stored in a private folder, is never linked from any public page,
+    and the page that serves it refuses everyone else. It is not used for
+    advertising, not sold, and not shared with anyone.</p>
+  <p><b>The automatic image check.</b> When you upload a receipt, our own software
+    looks at the image for signs that it is a real, unedited picture — whether it is
+    blank, whether it carries an editing app's stamp, whether the compression looks
+    tampered with — and, where available, reads the amount and date off it. It runs
+    <b>on the club's own server</b>. Your image is not sent to any outside service
+    or AI provider for this. The result is a screening aid shown to the owner, who
+    makes the actual decision.</p>
+  <p>We do not use your phone number for marketing. We use it to send
+    verification and password-change codes. We do not keep a copy of any code after
+    it has been used or has expired, and codes are stored only as a one-way hash.</p>
+
+  <h2>6. Your consent</h2>
+  <p>We only record an enquiry when you tick the consent box on the form. You can
+    withdraw consent at any time by calling us or asking us to delete your details.</p>
+
+  <h2>7. How long we keep it</h2>
+  <p>Enquiry records are kept for a maximum of <b>12 months</b>, or until you ask
+    us to delete them — whichever comes first.</p>
+  <p>Membership records, including the receipts and payment details behind them, are
+    kept for as long as your membership exists and afterwards for as long as the law
+    requires us to keep accounting records. One-time codes are deleted once used or
+    expired, and in any case within 24 hours.</p>
+
+  <h2>8. Your rights</h2>
+  <p>You may ask us at any time to:</p>
+  <ul>
+    <li>tell you what information we hold about you;</li>
+    <li>correct anything that is wrong;</li>
+    <li>delete it entirely.</li>
+  </ul>
+  <p>To do any of these, call <a href="tel:{{ b.phone | replace(' ','') }}">{{ b.phone }}</a>
+    or message us on Instagram at <a href="https://www.instagram.com/{{ b.instagram }}/" target="_blank" rel="noopener">@{{ b.instagram }}</a>.
+    We will act on a deletion request within 7 working days.</p>
+
+  <h2>9. Security</h2>
+  <p>Enquiry and member data are stored on a private database with restricted
+    access, and passwords are hashed. Receipt images sit in a private folder on the
+    same server, are served only to the member who uploaded them and to the owner,
+    and are sent to the browser without caching. No card or bank details are ever collected
+    on this website — membership payments are taken in person at the club, and
+    only a record that a payment was made is kept here for your account.</p>
+
+  <h2>10. Children</h2>
+  <p>This website is not directed at children under 18. If you are under 18,
+    please have a parent or guardian contact us on your behalf.</p>
+
+  <h2>11. Changes</h2>
+  <p>If this policy changes, the updated version will appear on this page with a
+    new date at the top.</p>
+
+  <h2>12. Governing law</h2>
+  <p>This policy is governed by the laws of India, including the Digital Personal
+    Data Protection Act, 2023. Any dispute falls under the jurisdiction of the
+    courts of Kolkata, West Bengal.</p>
+
+  <p class="legal-foot mono">Questions about this policy? Call {{ b.phone }}.</p>
+</main>
+
+<footer class="foot">
+  <div class="wrap foot-base">
+    <span class="mono">© {{ today }} {{ b.name }} · Kestopur, Kolkata</span>
+    <span class="mono"><a href="/">Home</a> · <a href="/terms">Terms</a></span>
+  </div>
+</footer>
+</body>
+</html>

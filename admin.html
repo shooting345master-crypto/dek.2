@@ -1,0 +1,525 @@
+{% extends "shell.html" %}
+{% block title %}Admin — Falcon Fitness{% endblock %}
+{% block body %}
+<main class="wrap app-main">
+
+  <header class="app-head">
+    <div>
+      <p class="kicker">Owner area</p>
+      <h1 class="h2">Admin</h1>
+      <p class="app-sub mono">Signed in as {{ user.email }}</p>
+    </div>
+  </header>
+
+  {% with msgs = get_flashed_messages(with_categories=true) %}
+    {% for cat, m in msgs %}
+      <div class="banner {{ 'ok' if cat == 'ok' else 'err' }}">{{ m }}</div>
+    {% endfor %}
+  {% endwith %}
+
+  <div class="stat-row">
+    <div class="stat"><span class="mono">Members</span><b>{{ stats.members }}</b></div>
+    <div class="stat"><span class="mono">Active plans</span><b>{{ stats.active }}</b></div>
+    <div class="stat"><span class="mono">Enquiries</span><b>{{ stats.leads }}</b></div>
+    <div class="stat"><span class="mono">Check-ins today</span><b>{{ stats.today_att }}</b></div>
+    <div class="stat"><span class="mono">Revenue this month</span><b>₹{{ stats.month_rev | money }}</b></div>
+    <div class="stat {% if stats.pending_reviews %}hot{% endif %}">
+      <span class="mono">Reviews to approve</span><b>{{ stats.pending_reviews }}</b></div>
+  </div>
+
+  <nav class="tabs">
+    {% for t, label in [('registrations','Approvals'),('memberships','Memberships'),
+                        ('prices','Prices'),('members','Members'),('payments','Payments'),
+                        ('attendance','Attendance'),('enquiries','Enquiries'),('reviews','Reviews')] %}
+      <a href="/admin/{{ t }}" class="{{ 'is-on' if tab == t }}">{{ label }}{% if t == 'registrations' and stats.pending_regs %}<b class="tab-dot">{{ stats.pending_regs }}</b>{% endif %}</a>
+    {% endfor %}
+  </nav>
+
+  {# ─────────────── APPROVALS ─────────────── #}
+  {% if tab == 'registrations' %}
+  <section class="panel-card">
+    <h3>Membership registrations</h3>
+    <p class="panel-note">People who paid you in person and then registered on the
+      site. Nothing is activated until you approve it here. The score is an automatic
+      screening aid — <b>it cannot prove a receipt is real</b>, so always check the
+      amount and UTR against your own UPI app.</p>
+
+    {% if not registrations %}
+      <p class="panel-note">No registrations yet.</p>
+    {% endif %}
+
+    {% for r in registrations %}
+    <div class="reg-card {{ 'is-pending' if r.status == 'pending' }}">
+      <div class="reg-head">
+        <div>
+          <b>{{ r.name }}</b>
+          <span class="mono tiny">{{ r.email }} · {{ r.phone or 'no phone' }}
+            {% if r.phone_verified %}<span class="pill pill-approved">phone verified</span>{% else %}<span class="pill pill-pending">phone unverified</span>{% endif %}
+          </span>
+        </div>
+        <span class="pill pill-{{ r.status }}">{{ r.status }}</span>
+      </div>
+
+      <div class="reg-body">
+        <div class="reg-receipt">
+          {% if r.receipt_path %}
+            <a href="/receipt/{{ r.id }}" target="_blank" rel="noopener" class="receipt-link">
+              <img src="/receipt/{{ r.id }}" alt="Receipt from {{ r.name }}"
+                   class="receipt-thumb" draggable="false" loading="lazy">
+            </a>
+            <p class="mono tiny">Click to open full size</p>
+          {% else %}
+            <p class="mono tiny">No receipt on file.</p>
+          {% endif %}
+        </div>
+
+        <div class="reg-facts">
+          <dl class="kv">
+            <div><dt>Plan claimed</dt><dd>{{ r.plan_grp or '' }} {{ r.plan_label or r.plan_code }}
+              {% if r.plan_months %} · {{ r.plan_months }} month(s){% endif %}</dd></div>
+            <div><dt>Price on file</dt><dd>₹{{ r.plan_price | money }}{% if r.plan_admission %} + ₹{{ r.plan_admission | money }} admission{% endif %}</dd></div>
+            <div><dt>Amount declared</dt><dd><b>₹{{ r.declared_amount | money }}</b></dd></div>
+            <div><dt>Paid on</dt><dd>{{ r.declared_paid_on or '—' }}</dd></div>
+            <div><dt>Method</dt><dd>{{ r.method or '—' }}</dd></div>
+            <div><dt>UTR given</dt><dd class="mono">{{ r.utr or '—' }}</dd></div>
+            <div><dt>Registered</dt><dd>{{ r.created_at[:16] | replace('T', ' ') }}</dd></div>
+          </dl>
+
+          {% if r.plan_price is not none and r.declared_amount %}
+            {% set diff = (r.declared_amount - r.plan_price - (r.plan_admission or 0)) | round(0) | int %}
+            {% if diff != 0 %}
+              <div class="banner {{ 'err' if diff < 0 else 'warn' }}">
+                Amount mismatch: declared ₹{{ r.declared_amount | money }} vs expected
+                ₹{{ (r.plan_price + (r.plan_admission or 0)) | money }}
+                ({{ '+' if diff > 0 }}{{ diff }}).
+              </div>
+            {% else %}
+              <div class="banner ok">Amount matches the plan price exactly.</div>
+            {% endif %}
+          {% endif %}
+        </div>
+      </div>
+
+      {# ---------- the screening panel ---------- #}
+      <details class="screen-panel" {{ 'open' if r.status == 'pending' }}>
+        <summary>
+          <span class="mono">AUTOMATIC RECEIPT SCREEN</span>
+          <b class="screen-score v-{{ r.screen_verdict or 'unknown' }}">
+            {% if r.screen_score is not none %}{{ r.screen_score }}/100{% else %}NOT SCREENED{% endif %}
+          </b>
+          <span class="pill pill-{{ 'approved' if r.screen_verdict == 'looks-legit' else ('pending' if r.screen_verdict == 'needs-a-look' else 'rejected') }}">
+            {{ (r.screen_verdict or 'not screened') | replace('-', ' ') }}
+          </span>
+        </summary>
+        <div class="screen-body">
+          {% if r.screen_verdict == 'not-screened' %}
+            <div class="banner err" style="margin-bottom:12px">
+              <b>Automatic screening did not run on this upload.</b>
+              The image library (Pillow) is not installed, so this receipt was
+              <u>not</u> examined at all. Look at it yourself before approving.
+              To switch screening on:
+              <code>pip install Pillow</code> — then press Re-screen.
+            </div>
+          {% endif %}
+          {% if r.screen_json %}
+            {% for n in (r.screen_json | fromjson) %}
+              <div class="screen-row v-{{ n.verdict }}">
+                <span class="mono sr-label">{{ n.label }}</span>
+                <span class="mono sr-value">{{ n.value }}</span>
+                <span class="sr-text">{{ n.text }}</span>
+              </div>
+            {% endfor %}
+          {% else %}
+            <p class="panel-note">This file has not been screened.</p>
+          {% endif %}
+
+          <div class="screen-ocr">
+            <span class="mono sr-label">Read from the image (OCR)</span>
+            {% if r.ocr_status == 'ok' %}
+              <span class="sr-text">Amount read: <b>{{ ('₹' ~ r.ocr_amount|int) if r.ocr_amount else 'not found' }}</b>
+                · Date read: <b>{{ r.ocr_date or 'not found' }}</b></span>
+            {% elif r.ocr_status == 'no-engine' %}
+              <span class="sr-text">The OCR engine is not installed, so the amount could
+                not be read automatically. Install it with
+                <code>pip install pytesseract</code> and the system
+                <code>tesseract</code> package, then press Re-screen.</span>
+            {% else %}
+              <span class="sr-text">OCR could not read this image ({{ r.ocr_status }}).</span>
+            {% endif %}
+          </div>
+          <p class="panel-note warn-note">
+            <b>Be clear-eyed about this score.</b> It catches blank, edited, re-saved and
+            obviously synthetic images, and it flags receipts whose amount does not
+            match the plan. It cannot prove a screenshot was not fabricated. Match the
+            UTR against your UPI app before you approve.
+          </p>
+        </div>
+      </details>
+
+      {% if r.status == 'pending' %}
+      <form method="post" action="/admin/registrations/{{ r.id }}/approve" class="reg-actions">
+        <input type="hidden" name="_csrf" value="{{ csrf }}">
+        <label class="field"><span>Membership starts</span>
+          <input type="date" name="start_date" value="{{ r.declared_paid_on or today_iso }}">
+          <small class="hint-sm">Defaults to the date on the receipt. Change it if you want.</small></label>
+        <label class="field grow"><span>Note (optional)</span>
+          <input name="admin_note" placeholder="e.g. cash payment confirmed at desk"></label>
+        <button class="btn btn-primary" type="submit">Approve &amp; issue card</button>
+      </form>
+      <form method="post" action="/admin/registrations/{{ r.id }}/reject" class="reg-reject">
+        <input type="hidden" name="_csrf" value="{{ csrf }}">
+        <input name="admin_note" placeholder="Reason (shown to the member)" class="grow">
+        <button class="btn btn-ghost danger" type="submit">Reject</button>
+      </form>
+      {% else %}
+        <p class="panel-note mono">Reviewed {{ (r.reviewed_at or '')[:16] | replace('T',' ') }}
+          {% if r.admin_note %} · “{{ r.admin_note }}”{% endif %}</p>
+      {% endif %}
+      <form method="post" action="/admin/registrations/{{ r.id }}/rescreen" class="inline">
+        <input type="hidden" name="_csrf" value="{{ csrf }}">
+        <button class="btn btn-ghost btn-sm" type="submit">Re-screen image</button>
+      </form>
+    </div>
+    {% endfor %}
+  </section>
+  {% endif %}
+
+  {# ─────────────── MEMBERSHIPS ─────────────── #}
+  {% if tab == 'memberships' %}
+  <section class="panel-card">
+    <h3>Memberships</h3>
+    <p class="panel-note">Every membership, past and present. A membership expires by
+      itself on its end date, and the member's digital card stops working at the same
+      moment. Revoking here ends it immediately.</p>
+
+    <form method="post" action="/admin/sweep" class="inline" style="margin-bottom:16px">
+      <input type="hidden" name="_csrf" value="{{ csrf }}">
+      <button class="btn btn-ghost btn-sm" type="submit">Run expiry sweep now</button>
+      <span class="mono tiny">{{ stats.expiring }} membership(s) end within 7 days.</span>
+    </form>
+
+    <div class="table-scroll">
+    <table class="data-table">
+      <thead><tr>
+        <th>Member</th><th>Plan</th><th>Start</th><th>End</th><th>Status</th>
+        <th>Card</th><th>Action</th>
+      </tr></thead>
+      <tbody>
+      {% for m in memberships %}
+        <tr>
+          <td><b>{{ m.name }}</b><br><span class="mono tiny">{{ m.email }}</span></td>
+          <td>{{ m.plan_code or '—' }}</td>
+          <td class="mono">{{ m.start_date or '—' }}</td>
+          <td class="mono">{{ m.end_date or '—' }}</td>
+          <td>
+            <span class="pill pill-{{ 'approved' if m.status == 'active' else ('pending' if m.status == 'expired' else 'rejected') }}">{{ m.status }}</span>
+            {% if m.revoked_reason %}<br><span class="mono tiny">{{ m.revoked_reason }}</span>{% endif %}
+          </td>
+          <td class="mono tiny">{{ m.card_serial or '—' }}</td>
+          <td>
+            {% if m.status == 'active' %}
+            <form method="post" action="/admin/memberships/{{ m.id }}/revoke" class="inline">
+              <input type="hidden" name="_csrf" value="{{ csrf }}">
+              <input type="hidden" name="user_id" value="{{ m.user_id }}">
+              <input name="reason" placeholder="reason" class="reason-in">
+              <button class="btn btn-ghost danger btn-sm" type="submit">Revoke</button>
+            </form>
+            {% elif m.status in ('revoked', 'expired', 'superseded') %}
+            <form method="post" action="/admin/memberships/{{ m.id }}/reinstate" class="inline">
+              <input type="hidden" name="_csrf" value="{{ csrf }}">
+              <input type="hidden" name="user_id" value="{{ m.user_id }}">
+              <button class="btn btn-ghost btn-sm" type="submit">Reinstate</button>
+            </form>
+            {% else %}<span class="mono tiny">—</span>{% endif %}
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    </div>
+  </section>
+  {% endif %}
+
+  {# ─────────────── PRICES ─────────────── #}
+  {% if tab == 'prices' %}
+  <section class="panel-card">
+    <h3>Price list</h3>
+    <p class="panel-note">These figures are what members see. Visitors who are not
+      signed in never receive them. Changes are live the moment you save.</p>
+
+    {# A <form> may not sit directly inside a <tr> — browsers hoist it out and the
+       Save buttons silently stop working. Each row's fields are instead bound to
+       a form that lives outside the table, using the HTML5 `form` attribute. #}
+    <div class="table-scroll">
+      <table class="data-table edit">
+        <thead>
+          <tr><th>Group</th><th>Label</th><th>Months</th><th>Price ₹</th>
+              <th>Admission ₹</th><th>Sessions</th><th>Note</th><th>On</th><th></th></tr>
+        </thead>
+        <tbody>
+        {% for p in plans %}
+          <tr>
+            <td><span class="mono tiny">{{ p.grp }}</span></td>
+            <td><input form="pf-{{ p.id }}" name="label" value="{{ p.label }}" class="cell-in"></td>
+            <td><input form="pf-{{ p.id }}" name="months" type="number" min="0" max="36" value="{{ p.months }}" class="cell-in num"></td>
+            <td><input form="pf-{{ p.id }}" name="price" type="number" step="1" min="0" value="{{ p.price | int }}" class="cell-in num"></td>
+            <td><input form="pf-{{ p.id }}" name="admission" type="number" step="1" min="0" value="{{ p.admission | int }}" class="cell-in num"></td>
+            <td><input form="pf-{{ p.id }}" name="sessions" type="number" min="0" value="{{ p.sessions or '' }}" class="cell-in num"></td>
+            <td><input form="pf-{{ p.id }}" name="note" value="{{ p.note or '' }}" class="cell-in"></td>
+            <td><input form="pf-{{ p.id }}" type="checkbox" name="active" {% if p.active %}checked{% endif %}></td>
+            <td><button form="pf-{{ p.id }}" class="btn btn-primary btn-xs" type="submit">Save</button></td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    {% for p in plans %}
+      <form id="pf-{{ p.id }}" method="post" action="/admin/plans/save" hidden>
+        <input type="hidden" name="_csrf" value="{{ csrf }}">
+        <input type="hidden" name="id" value="{{ p.id }}">
+        <input type="hidden" name="sort" value="{{ p.sort }}">
+      </form>
+    {% endfor %}
+
+    <h4 class="sub-head">Add a plan</h4>
+    <form method="post" action="/admin/plans/save" class="inline-grid">
+      <input type="hidden" name="_csrf" value="{{ csrf }}">
+      <label class="field"><span>Code</span><input name="code" placeholder="general_2" required></label>
+      <label class="field"><span>Group</span>
+        <select name="grp">
+          <option>general</option><option>pt</option><option>pt_duo</option>
+          <option>couple</option><option>student</option><option>friends3</option>
+          <option>friends4</option><option>daypass</option>
+        </select></label>
+      <label class="field"><span>Label</span><input name="label" placeholder="2 months" required></label>
+      <label class="field"><span>Months</span><input name="months" type="number" value="1" min="0"></label>
+      <label class="field"><span>Price ₹</span><input name="price" type="number" required min="0"></label>
+      <label class="field"><span>Admission ₹</span><input name="admission" type="number" value="0" min="0"></label>
+      <label class="field"><span>Sessions</span><input name="sessions" type="number" min="0"></label>
+      <label class="field"><span>Note</span><input name="note"></label>
+      <button class="btn btn-primary" type="submit">Add plan</button>
+    </form>
+  </section>
+  {% endif %}
+
+  {# ─────────────── MEMBERS ─────────────── #}
+  {% if tab == 'members' %}
+  <section class="panel-card">
+    <div class="card-head">
+      <h3>Members</h3>
+      <a class="btn btn-ghost btn-xs" href="/admin/export/members.csv">Export CSV</a>
+    </div>
+
+    <div class="table-scroll">
+      <table class="data-table">
+        <thead><tr><th>Name</th><th>Email</th><th>Phone</th><th>Plan</th>
+                   <th>Ends</th><th>Status</th><th></th></tr></thead>
+        <tbody>
+        {% for m in members %}
+          <tr>
+            <td>{{ m.name }}</td>
+            <td class="mono tiny">{{ m.email }}</td>
+            <td class="mono tiny">{{ m.phone or '—' }}</td>
+            <td class="mono tiny">{{ m.plan_code or '—' }}</td>
+            <td class="mono tiny">{{ m.end_date or '—' }}</td>
+            <td><span class="pill {{ 'pill-approved' if m.active else 'pill-rejected' }}">
+                {{ 'active' if m.active else 'disabled' }}</span></td>
+            <td>
+              <form method="post" action="/admin/members/toggle" class="inline">
+                <input type="hidden" name="_csrf" value="{{ csrf }}">
+                <input type="hidden" name="user_id" value="{{ m.id }}">
+                <button class="btn btn-ghost btn-xs" type="submit">
+                  {{ 'Disable' if m.active else 'Enable' }}</button>
+              </form>
+            </td>
+          </tr>
+        {% else %}
+          <tr><td colspan="7" class="empty">No members yet. Add the first one below.</td></tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <h4 class="sub-head">Add a member</h4>
+    <form method="post" action="/admin/members/add" class="inline-grid">
+      <input type="hidden" name="_csrf" value="{{ csrf }}">
+      <label class="field"><span>Name</span><input name="name" required></label>
+      <label class="field"><span>Email</span><input name="email" type="email" required></label>
+      <label class="field"><span>Phone</span><input name="phone" placeholder="9876543210"></label>
+      <label class="field"><span>Password</span>
+        <input name="password" placeholder="auto: member_FF_&lt;firstname&gt;">
+        <small class="hint-sm">Leave blank to use the standard member password.</small></label>
+      <label class="field"><span>Plan</span>
+        <select name="plan_code">
+          <option value="">— none yet —</option>
+          {% for grp, rows in groups.items() %}
+            {% for p in rows %}
+              <option value="{{ p.code }}">{{ p.grp }} · {{ p.label }} · ₹{{ p.price | money }}</option>
+            {% endfor %}
+          {% endfor %}
+        </select></label>
+      <button class="btn btn-primary" type="submit">Create member</button>
+    </form>
+    <p class="panel-note">Standard member password is
+      <code>member_FF_&lt;first name in lower case&gt;</code> — for example
+      <code>member_FF_rahul</code>. The exact password is shown in the green
+      message after you create the member. They are asked to change it on first
+      login.</p>
+  </section>
+  {% endif %}
+
+  {# ─────────────── PAYMENTS ─────────────── #}
+  {% if tab == 'payments' %}
+  <section class="panel-card">
+    <div class="card-head">
+      <h3>Payments</h3>
+      <a class="btn btn-ghost btn-xs" href="/admin/export/payments.csv">Export CSV</a>
+    </div>
+
+    <form method="post" action="/admin/payments/add" class="inline-grid">
+      <input type="hidden" name="_csrf" value="{{ csrf }}">
+      <label class="field"><span>Member</span>
+        <select name="user_id" required>
+          <option value="">— pick —</option>
+          {% for m in members %}<option value="{{ m.id }}">{{ m.name }}</option>{% endfor %}
+        </select></label>
+      <label class="field"><span>Amount ₹</span><input name="amount" type="number" min="1" required></label>
+      <label class="field"><span>Method</span>
+        <select name="method"><option>cash</option><option>upi</option>
+          <option>card</option><option>bank</option></select></label>
+      <label class="field"><span>Paid on</span>
+        <input name="paid_on" type="date" value="{{ now_date.isoformat() }}"></label>
+      <label class="field"><span>Plan</span>
+        <select name="plan_code"><option value="">—</option>
+          {% for grp, rows in groups.items() %}{% for p in rows %}
+            <option value="{{ p.code }}">{{ p.grp }} {{ p.label }}</option>
+          {% endfor %}{% endfor %}
+        </select></label>
+      <label class="field"><span>Note</span><input name="note"></label>
+      <button class="btn btn-primary" type="submit">Record payment</button>
+    </form>
+
+    <div class="table-scroll">
+      <table class="data-table">
+        <thead><tr><th>Date</th><th>Member</th><th>Amount</th><th>Method</th><th>Plan</th><th>Note</th></tr></thead>
+        <tbody>
+        {% for p in payments %}
+          <tr><td class="mono tiny">{{ p.paid_on }}</td><td>{{ p.name or '—' }}</td>
+              <td>₹{{ p.amount | money }}</td><td class="mono tiny">{{ p.method }}</td>
+              <td class="mono tiny">{{ p.plan_code or '—' }}</td><td>{{ p.note or '—' }}</td></tr>
+        {% else %}
+          <tr><td colspan="6" class="empty">No payments recorded yet.</td></tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+  {% endif %}
+
+  {# ─────────────── ATTENDANCE ─────────────── #}
+  {% if tab == 'attendance' %}
+  <section class="panel-card">
+    <div class="card-head">
+      <h3>Attendance</h3>
+      <a class="btn btn-ghost btn-xs" href="/admin/export/attendance.csv">Export CSV</a>
+    </div>
+
+    <form method="post" action="/admin/attendance/mark" class="inline-grid">
+      <input type="hidden" name="_csrf" value="{{ csrf }}">
+      <label class="field"><span>Member checking in</span>
+        <select name="user_id" required>
+          <option value="">— pick —</option>
+          {% for m in members if m.active %}<option value="{{ m.id }}">{{ m.name }}</option>{% endfor %}
+        </select></label>
+      <label class="field"><span>Note</span><input name="note" placeholder="optional"></label>
+      <button class="btn btn-primary" type="submit">Mark check-in</button>
+    </form>
+
+    <div class="table-scroll">
+      <table class="data-table">
+        <thead><tr><th>When</th><th>Member</th><th>Note</th></tr></thead>
+        <tbody>
+        {% for a in attendance %}
+          <tr><td class="mono tiny">{{ a.checkin_at[:16] | replace('T',' ') }}</td>
+              <td>{{ a.name or '—' }}</td><td>{{ a.note or '—' }}</td></tr>
+        {% else %}
+          <tr><td colspan="3" class="empty">No check-ins yet.</td></tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+  {% endif %}
+
+  {# ─────────────── ENQUIRIES ─────────────── #}
+  {% if tab == 'enquiries' %}
+  <section class="panel-card">
+    <div class="card-head">
+      <h3>Website enquiries</h3>
+      <a class="btn btn-ghost btn-xs" href="/admin/export/leads.csv">Export CSV</a>
+    </div>
+    <div class="table-scroll">
+      <table class="data-table">
+        <thead><tr><th>Received</th><th>Name</th><th>Phone</th><th>Email</th>
+                   <th>Interested in</th><th>Message</th></tr></thead>
+        <tbody>
+        {% for l in leads %}
+          <tr><td class="mono tiny">{{ l.created_at[:16] | replace('T',' ') }}</td>
+              <td>{{ l.name }}</td>
+              <td><a href="tel:{{ l.phone }}">{{ l.phone }}</a></td>
+              <td class="mono tiny">{{ l.email or '—' }}</td>
+              <td class="mono tiny">{{ l.goal or '—' }}</td>
+              <td>{{ l.message or '—' }}</td></tr>
+        {% else %}
+          <tr><td colspan="6" class="empty">No enquiries yet.</td></tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+  {% endif %}
+
+  {# ─────────────── REVIEWS ─────────────── #}
+  {% if tab == 'reviews' %}
+  <section class="panel-card">
+    <h3>Reviews</h3>
+    <p class="panel-note">Only approved reviews appear on the website.
+      Never approve anything you cannot stand behind.</p>
+    <div class="table-scroll">
+      <table class="data-table">
+        <thead><tr><th>Date</th><th>Name</th><th>Rating</th><th>Review</th><th>Status</th><th></th></tr></thead>
+        <tbody>
+        {% for r in reviews %}
+          <tr>
+            <td class="mono tiny">{{ r.created_at[:10] }}</td>
+            <td>{{ r.name }}</td>
+            <td class="mono">{{ r.rating }}/5</td>
+            <td>{{ r.body }}</td>
+            <td><span class="pill pill-{{ r.status }}">{{ r.status }}</span></td>
+            <td class="nowrap">
+              <form method="post" action="/admin/reviews/{{ r.id }}/approve" class="inline">
+                <input type="hidden" name="_csrf" value="{{ csrf }}">
+                <button class="btn btn-primary btn-xs" type="submit">Approve</button>
+              </form>
+              <form method="post" action="/admin/reviews/{{ r.id }}/reject" class="inline">
+                <input type="hidden" name="_csrf" value="{{ csrf }}">
+                <button class="btn btn-ghost btn-xs" type="submit">Reject</button>
+              </form>
+              <form method="post" action="/admin/reviews/{{ r.id }}/delete" class="inline">
+                <input type="hidden" name="_csrf" value="{{ csrf }}">
+                <button class="btn btn-ghost btn-xs danger" type="submit">Delete</button>
+              </form>
+            </td>
+          </tr>
+        {% else %}
+          <tr><td colspan="6" class="empty">No reviews yet.</td></tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+  {% endif %}
+
+</main>
+{% endblock %}

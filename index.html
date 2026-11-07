@@ -1,0 +1,949 @@
+{% set P = {
+  'name': 'Falcon Fitness',
+  'tagline': 'Discipline today, strength tomorrow.',
+  'line2': 'Your only limit is you.',
+  'addr': 'Belabhumi, 1st Floor, AC-204, Prafullakanan (E), Opp. Mio Amore, Beside Axis Bank, Kestopur, Kolkata 700101',
+  'phone1': '+91 98746 05022',
+  'phone2': '+91 70037 24906',
+  'wa': '919874605022',
+  'insta': 'falconfitness.kolkata',
+  'fb': 'Falcon Fitness',
+  'maps': 'https://www.google.com/maps/search/?api=1&query=Falcon+Fitness+Kestopur+Kolkata',
+  'est': '2020'
+} %}
+<!DOCTYPE html>
+<html lang="en" data-theme="dark" class="no-js">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Falcon Fitness — Unisex Multigym Club in Kestopur, Kolkata</title>
+<script>document.documentElement.className=document.documentElement.className.replace("no-js","");</script>
+<meta name="description" content="Falcon Fitness, Kestopur — a unisex multigym club with AC, premium equipment, water purifier and free parking. Membership, personal training, couple and student packages. Ask us for the current rate card.">
+<meta name="theme-color" content="#0a0708">
+<link rel="canonical" href="https://falconfitness.in/">
+
+<!-- social preview -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Falcon Fitness">
+<meta property="og:title" content="Falcon Fitness — Unisex Multigym Club, Kestopur Kolkata">
+<meta property="og:description" content="AC gym in Kestopur with premium equipment. Membership, personal training, couple and student packages. Ask us for the current rate card.">
+<meta property="og:image" content="{{ url_for('static', filename='img/real/hero-orange.jpg', _external=True) }}">
+<meta property="og:url" content="https://falconfitness.in/">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="icon" type="image/png" href="{{ url_for('static', filename='img/favicon-crest.png') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v={{ av('css/style.css') }}">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "HealthAndBeautyBusiness",
+  "additionalType": "https://schema.org/ExerciseGym",
+  "name": "Falcon Fitness",
+  "description": "Unisex multigym club with AC, premium equipment, water purifier and free parking in Kestopur, Kolkata.",
+  "url": "https://falconfitness.in/",
+  "telephone": "{{ P.phone1 }}",
+  "openingDate": "2020-08-15",
+  "image": "{{ url_for('static', filename='img/real/hero-orange.jpg', _external=True) }}",
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "Belabhumi, 1st Floor, AC-204, Prafullakanan (E), Opp. Mio Amore, Beside Axis Bank",
+    "addressLocality": "Kestopur, Kolkata",
+    "postalCode": "700101",
+    "addressRegion": "West Bengal",
+    "addressCountry": "IN"
+  },
+  "sameAs": ["https://www.instagram.com/falconfitness.kolkata/"],
+    "amenityFeature": [
+    {"@type":"LocationFeatureSpecification","name":"Air Conditioned","value":true},
+    {"@type":"LocationFeatureSpecification","name":"Water Purifier","value":true},
+    {"@type":"LocationFeatureSpecification","name":"Free Parking","value":true}
+  ]
+}
+</script>
+</head>
+<body>
+
+<div class="grain" aria-hidden="true"></div>
+<div class="vignette" aria-hidden="true"></div>
+<div class="cursor-halo" id="cursorHalo" aria-hidden="true"></div>
+<div class="progress-rail" aria-hidden="true"><i id="scrollProgress"></i></div>
+
+<a class="skip" href="#main">Skip to content</a>
+
+<!-- ░░ NAV ░░ -->
+<header class="nav" id="nav">
+  <div class="nav-inner">
+    <a class="brand" href="#top" aria-label="Falcon Fitness home">
+      <img draggable="false" src="{{ url_for('static', filename='img/falcon-crest-cream.png') }}" alt="" class="brand-mark">
+      <span class="brand-type"><b>FALCON</b><i>FITNESS</i></span>
+    </a>
+
+    <nav class="nav-links" id="navLinks" aria-label="Primary">
+      <a href="#program" data-nav>Training</a>
+      <a href="#tools" data-nav>Tools</a>
+      <a href="#membership" data-nav>Membership</a>
+      <a href="#facility" data-nav>Facility</a>
+      <a href="#trainer" data-nav>Trainer</a>
+      <a href="#reviews" data-nav>Reviews</a>
+      <a href="#visit" data-nav>Visit</a>
+      {% if user %}
+        {% if is_admin %}
+          <a href="/admin" class="nav-account">Admin</a>
+        {% else %}
+          <a href="/account" class="nav-account">My account</a>
+        {% endif %}
+      {% else %}
+        <a href="/login" class="nav-account">Member login</a>
+        <a href="/admin/login" class="nav-account nav-account-alt">Admin</a>
+      {% endif %}
+    </nav>
+
+    <div class="nav-right">
+      {# Search lives beside "See memberships" on desktop (see .hero-cta below)
+         and here in the header on phones. Two copies, one id each -- the same
+         element cannot sit in two places at once without JavaScript games. #}
+      <button class="cmdk-btn cmdk-header" id="cmdkOpen" aria-label="Open command palette">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M16.5 16.5 21 21"/></svg>
+        <span>Search</span><kbd>⌘K</kbd>
+      </button>
+      <button class="burger" id="burger" aria-label="Menu" aria-expanded="false"><i></i><i></i></button>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+
+<!-- ░░ HERO ░░ -->
+<section class="hero" id="top">
+  <div class="hero-bg" aria-hidden="true">
+    <img draggable="false" src="{{ url_for('static', filename='img/real/hero-orange.jpg') }}" alt="">
+    <div class="hero-glow"></div>
+  </div>
+
+  <div class="hero-grid wrap">
+    <div class="hero-copy">
+      <p class="eyebrow reveal">
+        <span class="pulse-dot" id="openDot"></span>
+        <span id="openLabel">Kestopur, Kolkata · Open 6:30 am – 11:00 pm daily</span>
+      </p>
+
+      <h1 class="hero-title reveal" data-split>
+        Discipline<br>today,<br><em>strength</em><br>tomorrow.
+      </h1>
+
+      <p class="hero-sub reveal">
+        A unisex multigym club in Kestopur with air conditioning,
+        premium equipment, filtered water and free parking.
+        Membership rates are shared with members — ask us and we will send the current rate card.
+      </p>
+
+      <div class="hero-cta reveal">
+        <a href="#visit" class="btn btn-primary" data-nav>
+          Enquire now
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </a>
+        <a href="https://wa.me/{{ P.wa }}?text=Hi%20Falcon%20Fitness%2C%20I%27d%20like%20to%20know%20about%20membership."
+           class="btn btn-whatsapp" target="_blank" rel="noopener">
+          WhatsApp us
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 11.5a8.4 8.4 0 0 1-8.5 8.5 8.5 8.5 0 0 1-4-1L3 20l1-5.5a8.5 8.5 0 1 1 17-3Z"/></svg>
+        </a>
+        <a href="#membership" class="btn btn-ghost" data-nav>See memberships</a>
+        <button class="cmdk-btn cmdk-hero" id="cmdkOpenHero" aria-label="Search this site">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M16.5 16.5 21 21"/></svg>
+          <span>Search</span><kbd>⌘K</kbd>
+        </button>
+        <a class="btn btn-ghost dirs-btn dirs-desktop" href="{{ P.maps }}"
+           target="_blank" rel="noopener">Get directions</a>
+        <a class="btn btn-ghost dirs-btn dirs-mobile" href="{{ P.maps }}"
+           target="_blank" rel="noopener">Get directions</a>
+      </div>
+
+      <dl class="hero-stats reveal">
+        <div><dt>Since</dt><dd>15 August 2020</dd></div>
+        <div><dt>2020</dt><dd>Serving Kestopur</dd></div>
+        <div><dt>AC</dt><dd>Full environment</dd></div>
+        <div><dt>Free</dt><dd>Parking on site</dd></div>
+      </dl>
+    </div>
+
+    <aside class="hero-card reveal" aria-label="Club status">
+      <div class="card-glass">
+        <div class="hc-head">
+          <span class="tag">Open hours</span>
+          <span class="mono" id="clock">--:--</span>
+        </div>
+        <img draggable="false" class="hc-logo" src="{{ url_for('static', filename='img/falcon-cream.png') }}" alt="Falcon Fitness logo">
+        <div class="hc-rows">
+          {# Same hours all seven days, so one row states it once instead of
+             repeating the same line twice and looking like a mistake. #}
+          <div class="hc-row"><span>Open every day</span><b id="hoursWeek">6:30 am – 11:00 pm</b></div>
+          <div class="hc-row"><span>Day pass</span><b>Ask at the desk</b></div>
+        </div>
+
+      </div>
+    </aside>
+  </div>
+
+  <div class="ticker" aria-hidden="true"><div class="ticker-track" id="tickerTrack"></div></div>
+</section>
+
+<!-- ░░ WHAT'S INCLUDED ░░ -->
+<section class="manifesto wrap">
+  <div class="m-left reveal">
+    <p class="kicker">01 — The club</p>
+    <h2 class="h2">A properly equipped floor,<br><em>not a shed with dumbbells.</em></h2>
+  </div>
+  <div class="m-right">
+    <p class="reveal">Falcon Fitness opened in Kestopur on 15 August 2020. It is a
+      unisex multigym club built for everyday training — air conditioned
+      throughout, with premium strength and cardio equipment, filtered drinking
+      water, clean bathrooms and free parking right at the building.</p>
+    <div class="m-grid">
+      <article class="m-item reveal">
+        <span class="m-num mono">AC</span>
+        <h3>Air conditioned</h3>
+        <p>A fully air-conditioned floor — you can train properly in a Kolkata summer.</p>
+      </article>
+      <article class="m-item reveal">
+        <span class="m-num mono">EQ</span>
+        <h3>Premium equipment</h3>
+        <p>Strength machines, free weights, benches and cardio, maintained and in service.</p>
+      </article>
+      <article class="m-item reveal">
+        <span class="m-num mono">HY</span>
+        <h3>Hygienic &amp; safe</h3>
+        <p>Clean bathrooms, sanitised surfaces and a floor that is actually looked after.</p>
+      </article>
+      <article class="m-item reveal">
+        <span class="m-num mono">PR</span>
+        <h3>Free parking</h3>
+        <p>Park at the building — no hunting for street space before a session.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ░░ TRAINING TOOLS / PROGRAMME ░░ -->
+<section class="program" id="program">
+  <div class="wrap">
+    <header class="sec-head reveal">
+      <p class="kicker">02 — Training engine</p>
+      <h2 class="h2">Your block, computed.</h2>
+      <p class="sec-sub">Four inputs. We build an eight-week periodised block,
+        session by session, with calorie and protein targets to match. Free, no
+        account, and it runs on our own server.</p>
+    </header>
+
+    <div class="builder reveal">
+      <ol class="steps" id="steps" aria-label="Builder progress">
+        <li class="is-active" data-step-dot="0"><span class="mono">1</span>Goal</li>
+        <li data-step-dot="1"><span class="mono">2</span>Schedule</li>
+        <li data-step-dot="2"><span class="mono">3</span>Profile</li>
+        <li data-step-dot="3"><span class="mono">4</span>Result</li>
+      </ol>
+
+      <div class="builder-body">
+        <div class="panel is-active" data-panel="0">
+          <h3 class="panel-title">What are you training for?</h3>
+          <div class="choice-grid" role="radiogroup" aria-label="Training goal">
+            <button class="choice is-picked" data-goal="strength" role="radio" aria-checked="true">
+              <span class="choice-ico">▲</span><b>Get stronger</b>
+              <i>Heavy triples &amp; fives on the main lifts</i>
+            </button>
+            <button class="choice" data-goal="hypertrophy" role="radio" aria-checked="false">
+              <span class="choice-ico">◈</span><b>Build muscle</b>
+              <i>Volume-led growth with controlled reps</i>
+            </button>
+            <button class="choice" data-goal="fatloss" role="radio" aria-checked="false">
+              <span class="choice-ico">◇</span><b>Lose fat</b>
+              <i>Hold strength while the waist comes down</i>
+            </button>
+            <button class="choice" data-goal="endurance" role="radio" aria-checked="false">
+              <span class="choice-ico">≈</span><b>Get fitter</b>
+              <i>Higher reps, shorter rest, better engine</i>
+            </button>
+          </div>
+          <div class="panel-foot">
+            <span class="hint mono">Step 1 of 4</span>
+            <button class="btn btn-primary" data-next>Continue</button>
+          </div>
+        </div>
+
+        <div class="panel" data-panel="1">
+          <h3 class="panel-title">How many days can you commit?</h3>
+          <div class="day-pick" role="radiogroup" aria-label="Days per week">
+            <button data-days="2" role="radio" aria-checked="false">2<i>full body</i></button>
+            <button data-days="3" role="radio" aria-checked="false">3<i>push/pull/legs</i></button>
+            <button class="is-picked" data-days="4" role="radio" aria-checked="true">4<i>upper/lower</i></button>
+            <button data-days="5" role="radio" aria-checked="false">5<i>hybrid</i></button>
+            <button data-days="6" role="radio" aria-checked="false">6<i>PPL ×2</i></button>
+          </div>
+          <div class="field-row">
+            <label class="field">
+              <span>Experience</span>
+              <select id="level">
+                <option value="beginner">Beginner — under 1 year</option>
+                <option value="intermediate" selected>Intermediate — 1 to 3 years</option>
+                <option value="advanced">Advanced — 3 years plus</option>
+              </select>
+            </label>
+          </div>
+          <div class="panel-foot">
+            <button class="btn btn-ghost" data-back>Back</button>
+            <button class="btn btn-primary" data-next>Continue</button>
+          </div>
+        </div>
+
+        <div class="panel" data-panel="2">
+          <h3 class="panel-title">Body metrics</h3>
+          <p class="panel-hint">Used for calorie and protein targets only. Nothing leaves your machine.</p>
+
+          <div class="seg" role="radiogroup" aria-label="Sex">
+            <button class="is-picked" data-sex="m" role="radio" aria-checked="true">Male</button>
+            <button data-sex="f" role="radio" aria-checked="false">Female</button>
+          </div>
+
+          <div class="slider-field">
+            <div class="sf-top"><span>Age</span><output id="ageOut">29</output></div>
+            <input type="range" id="age" min="14" max="75" value="29">
+          </div>
+          <div class="slider-field">
+            <div class="sf-top"><span>Bodyweight</span><output id="weightOut">74 kg</output></div>
+            <input type="range" id="weight" min="40" max="150" value="74">
+          </div>
+          <div class="slider-field">
+            <div class="sf-top"><span>Height</span><output id="heightOut">174 cm</output></div>
+            <input type="range" id="height" min="140" max="210" value="174">
+          </div>
+          <div class="slider-field">
+            <div class="sf-top"><span>Daily activity</span><output id="activityOut">Moderate</output></div>
+            <input type="range" id="activity" min="0" max="4" step="1" value="2">
+            <div class="scale mono"><span>Desk</span><span>Light</span><span>Moderate</span><span>High</span><span>Athlete</span></div>
+          </div>
+
+          <div class="panel-foot">
+            <button class="btn btn-ghost" data-back>Back</button>
+            <button class="btn btn-primary" id="generate">
+              Generate my block
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7l1-8Z"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="panel panel-result" data-panel="3">
+          <div class="result-loading" id="resultLoading" hidden>
+            <div class="load-ring"><i></i><i></i><i></i></div>
+            <p class="mono" id="loadMsg">compiling engine…</p>
+          </div>
+
+          <div class="result" id="result" hidden>
+            <div class="result-top">
+              <div>
+                <p class="kicker">Your eight-week block</p>
+                <h3 id="resTitle">—</h3>
+                <p class="result-meta mono" id="resMeta">—</p>
+              </div>
+              <div class="result-actions">
+                <button class="btn btn-ghost btn-sm" id="restart">Edit inputs</button>
+                <button class="btn btn-primary btn-sm" id="downloadPlan">Download plan</button>
+              </div>
+            </div>
+            <div class="result-kpis" id="resKpis"></div>
+            <div class="result-cols">
+              <div class="res-block">
+                <h4>Periodisation</h4>
+                <div class="week-strip" id="weekStrip"></div>
+                <p class="res-note" id="weekNote">—</p>
+              </div>
+              <div class="res-block">
+                <h4>Macro split</h4>
+                <div class="macro-bars" id="macroBars"></div>
+                <p class="res-note" id="macroNote">—</p>
+              </div>
+            </div>
+            <div class="res-block">
+              <div class="res-block-head">
+                <h4>Weekly split</h4>
+                <div class="day-tabs" id="dayTabs"></div>
+              </div>
+              <div class="session" id="session"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ░░ TOOLS ░░ -->
+<section class="tools" id="tools">
+  <div class="wrap">
+    <header class="sec-head reveal">
+      <p class="kicker">03 — Floor tools</p>
+      <h2 class="h2">Bring the kit to the platform.</h2>
+      <p class="sec-sub">Six calculators that replace the chalk-scrawled notes in your gym bag.</p>
+    </header>
+
+    <div class="tool-grid">
+      <article class="tool tool-wide reveal">
+        <div class="tool-head">
+          <div><span class="tag">Plate loader</span><h3>Load the bar exactly</h3></div>
+          <p class="mono tool-detail" id="plateDetail">per side · —</p>
+        </div>
+        <div class="barbell" id="barbell" aria-hidden="true">
+          <svg viewBox="0 0 620 120" preserveAspectRatio="xMidYMid meet">
+            <g id="bbGroup">
+              <rect x="6" y="56" width="608" height="10" rx="5" fill="url(#steel)"/>
+              <rect x="24" y="34" width="10" height="52" rx="4" fill="#3a3436"/>
+              <rect x="586" y="34" width="10" height="52" rx="4" fill="#3a3436"/>
+            </g>
+            <defs>
+              <linearGradient id="steel" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#8b8489"/><stop offset=".5" stop-color="#4a4448"/>
+                <stop offset="1" stop-color="#211d1f"/>
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
+        <div class="plate-readout">
+          <div><span class="mono">Bar</span><b>20 kg</b></div>
+          <div><span class="mono">Per side</span><b id="plateSide">40 kg</b></div>
+          <div><span class="mono">On the bar</span><b id="plateTotal">100 kg</b></div>
+        </div>
+        <div class="slider-field tight">
+          <div class="sf-top"><span>Target weight</span><output id="plateOut">100 kg</output></div>
+          <input type="range" id="plateRange" min="20" max="300" step="2.5" value="100">
+        </div>
+        <div class="plate-list" id="plateList"></div>
+      </article>
+
+      <article class="tool reveal">
+        <div class="tool-head"><div><span class="tag">1RM lab</span><h3>Estimate your ceiling</h3></div></div>
+        <div class="slider-field tight">
+          <div class="sf-top"><span>Weight lifted</span><output id="ormWeightOut">100 kg</output></div>
+          <input type="range" id="ormWeight" min="20" max="300" step="2.5" value="100">
+        </div>
+        <div class="slider-field tight">
+          <div class="sf-top"><span>Reps completed</span><output id="ormRepsOut">5</output></div>
+          <input type="range" id="ormReps" min="1" max="15" step="1" value="5">
+        </div>
+        <div class="orm-readout">
+          <div class="ring" id="ormRing" style="--pct:0"><b id="ormValue">—</b><small>estimated 1RM</small></div>
+        </div>
+        <div class="pct-table" id="pctTable"></div>
+      </article>
+
+      <article class="tool reveal">
+        <div class="tool-head"><div><span class="tag">Standards</span><h3>Where you sit</h3></div></div>
+        <div class="field-row two">
+          <label class="field"><span>Lift</span>
+            <select id="stdLift">
+              <option value="squat">Back squat</option>
+              <option value="bench">Bench press</option>
+              <option value="deadlift">Deadlift</option>
+              <option value="ohp">Overhead press</option>
+            </select>
+          </label>
+          <label class="field"><span>Sex</span>
+            <select id="stdSex"><option value="m">Male</option><option value="f">Female</option></select>
+          </label>
+        </div>
+        <div class="slider-field tight">
+          <div class="sf-top"><span>Lift load</span><output id="stdOut">100 kg</output></div>
+          <input type="range" id="stdWeight" min="20" max="300" step="2.5" value="100">
+        </div>
+        <div class="slider-field tight">
+          <div class="sf-top"><span>Bodyweight</span><output id="stdBwOut">75 kg</output></div>
+          <input type="range" id="stdBw" min="40" max="150" step="1" value="75">
+        </div>
+        <div class="std-out">
+          <p class="std-level" id="stdLevel">—</p>
+          <div class="std-track"><i id="stdFill" style="width:0%"></i></div>
+          <p class="std-next mono" id="stdNext">—</p>
+        </div>
+      </article>
+
+      <article class="tool reveal">
+        <div class="tool-head"><div><span class="tag">Recovery</span><h3>Load ratio screen</h3></div></div>
+        <p class="tool-blurb">Log a session's tonnage (sets × reps × load, in kg). We compare
+          your last 7 days against your running average to catch a spike before it hurts.</p>
+        <form class="inline-form" id="checkinForm">
+          <input type="number" id="ciLoad" placeholder="Tonnage kg" min="0" step="50" value="4000" required>
+          <button class="btn btn-primary btn-sm" type="submit">Log</button>
+        </form>
+        <div class="acwr-out">
+          <div class="ring small" id="acwrRing" style="--pct:0"><b id="acwrRatio">—</b><small>ACWR</small></div>
+          <div class="acwr-copy">
+            <p class="acwr-band" id="acwrBand">—</p>
+            <p class="acwr-advice" id="acwrAdvice">Log at least one session to see your ratio.</p>
+          </div>
+        </div>
+        <p class="mono tiny" id="ciStats">0 sessions logged</p>
+      </article>
+
+      <article class="tool reveal">
+        <div class="tool-head"><div><span class="tag">Hydration</span><h3>Daily fluid target</h3></div></div>
+        <div class="water-viz" id="waterViz" aria-hidden="true">
+          <div class="glass"><i id="waterFill"></i></div>
+          <div><b class="big" id="waterLitres">2.6 L</b><p class="mono">training day · <span id="waterBase">2.4 L baseline</span></p></div>
+        </div>
+        <p class="tool-blurb">Add 500 ml per hour of hard training and 5 ml per kg above
+          your baseline bodyweight. Filtered water is free at the club.</p>
+      </article>
+
+      <article class="tool tool-cta reveal">
+        <div class="tool-head"><div><span class="tag">Need a hand?</span><h3>Train with Sourav</h3></div></div>
+        <p class="tool-blurb">Personal training is available one-to-one or as a duo, in blocks of
+          16 to 200 sessions. Tell us your goal and we will put a plan together on the floor.</p>
+        <a href="#membership" class="btn btn-primary" data-nav>See PT packages</a>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ░░ MEMBERSHIP ░░ -->
+<section class="membership" id="membership">
+  <div class="wrap">
+    <header class="sec-head reveal">
+      <p class="kicker">04 — Membership</p>
+      <h2 class="h2">One club. Several ways to train.</h2>
+      <p class="sec-sub">No hidden charges. Longer durations work out cheaper per
+        month. Pay at the club — cash, UPI or card.</p>
+    </header>
+
+{% if unlocked %}
+    <!-- ─── signed-in view: real prices ─── -->
+    <div class="unlocked-badge reveal">
+      <span class="mono">Member prices</span>
+      <b>Visible because you're signed in</b>
+    </div>
+
+    <div class="price-grid">
+      {% set g = groups.general or [] %}
+      <article class="price reveal">
+        <h3>General</h3>
+        <p class="price-num"><span class="mono">₹</span><b>{{ g[0].price | money if g else '—' }}</b><i>/month</i></p>
+        <p class="price-sub">Full access to the gym floor, any time we are open.</p>
+        <ul>
+          {% for p in g %}
+            <li>{{ p.label }} · ₹{{ p.price | money }}{% if p.admission %} + ₹{{ p.admission | money }} admission{% endif %}</li>
+          {% endfor %}
+        </ul>
+        <a href="{{ b.maps }}" target="_blank" rel="noopener" class="btn btn-ghost">Visit the club</a>
+      </article>
+
+      {% set pt = groups.pt or [] %}
+      <article class="price price-feature reveal">
+        <span class="price-badge">Most chosen</span>
+        <h3>Personal training</h3>
+        <p class="price-num"><span class="mono">₹</span><b>{{ pt[0].price | money if pt else '—' }}</b><i>/month</i></p>
+        <p class="price-sub">One-to-one coaching with Sourav. Or split the same block with a partner.</p>
+        <ul>
+          {% for p in pt %}
+            <li>{{ p.label }} · ₹{{ p.price | money }}{% if p.sessions %} · {{ p.sessions }} sessions{% endif %}</li>
+          {% endfor %}
+          {% if groups.pt_duo %}<li><b>Duo PT</b> · same price, split between two</li>{% endif %}
+        </ul>
+        <a href="#visit" class="btn btn-primary" data-nav>Ask about PT</a>
+      </article>
+
+      {% set cpl = groups.couple or [] %}
+      <article class="price reveal">
+        <h3>Couple</h3>
+        <p class="price-num"><span class="mono">₹</span><b>{{ cpl[0].price | money if cpl else '—' }}</b><i>each</i></p>
+        <p class="price-sub">Two memberships, priced per person.</p>
+        <ul>
+          {% for p in cpl %}
+            <li>{{ p.label }} · ₹{{ p.price | money }} × 2 members = ₹{{ (p.price * 2) | money }}</li>
+          {% endfor %}
+          <li>No admission charges</li>
+        </ul>
+        <a href="#visit" class="btn btn-ghost" data-nav>Ask about couples</a>
+      </article>
+    </div>
+
+    <div class="sheet reveal">
+      <div class="sheet-head">
+        <h3>Full price list</h3>
+        <p class="mono">Prices in ₹ · set by the owner</p>
+      </div>
+      <div class="sheet-grid">
+        {% for grp, rows in groups.items() if grp in ['student','friends3','friends4'] %}
+          <div class="sheet-card">
+            <h4>{{ grp | replace('_',' ') | replace('friends3','Friends train together') | replace('friends4','Friends train together') | title }}
+              <span class="mono">{{ rows[0].note or '' }}</span></h4>
+            <table>
+              <tr><th>Duration</th><th>Price</th></tr>
+              {% for p in rows %}
+                <tr><td>{{ p.label }}</td><td>₹{{ p.price | money }}</td></tr>
+              {% endfor %}
+            </table>
+            <p class="sheet-note">No admission charges</p>
+          </div>
+        {% endfor %}
+
+        {% if groups.daypass %}
+          <div class="sheet-card sheet-daypass">
+            <h4>Day pass</h4>
+            <p class="daypass-price"><span class="mono">₹</span>{{ groups.daypass[0].price | money }}</p>
+            <p class="sheet-note">{{ groups.daypass[0].note or 'One day' }}</p>
+            <p class="sheet-note">Walk in during open hours. No booking needed.</p>
+          </div>
+        {% endif %}
+
+        {% if groups.pt_duo %}
+          <div class="sheet-card">
+            <h4>Personal training <span class="mono">duo — split between two</span></h4>
+            <table>
+              <tr><th>Duration</th><th>Price</th></tr>
+              {% for p in groups.pt_duo %}
+                <tr><td>{{ p.label }}</td><td>₹{{ p.price | money }}</td></tr>
+              {% endfor %}
+            </table>
+            <p class="sheet-note">No admission charges</p>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+
+{% else %}
+    <!-- ─── anonymous view: no price ever reaches the browser ─── -->
+    <div class="locked reveal">
+      <div class="locked-inner">
+        <div class="locked-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="11" rx="2"/>
+            <path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+        </div>
+        <p class="kicker">Prices for members</p>
+        <h3>Our price list is shown to signed-in members.</h3>
+        <p>Falcon Fitness publishes its rates to members and enquirers rather than
+          to the open web. Sign in and the full list — every duration, every
+          package, including PT, couple, student and group rates — appears right
+          here.</p>
+        <div class="locked-actions">
+          <a class="btn btn-primary" href="/login">Sign in to see prices</a>
+          <a class="btn btn-ghost" href="#visit" data-nav>Or ask us directly</a>
+        </div>
+        <p class="locked-foot mono">Not a member yet? Send an enquiry and we'll
+          share the current rate card with you.</p>
+        <p class="locked-foot mono">Already paid at the club?
+          <a href="/register">Register your membership</a> with your receipt.</p>
+        <p class="locked-foot mono" style="margin-top:10px">
+          Club owner? <a href="/admin/login">Sign in to the admin panel</a>.</p>
+      </div>
+    </div>
+
+    <div class="blur-strip" aria-hidden="true">
+      <div class="blur-card"><span class="mono">General</span><b>₹ •••</b><i>/month</i></div>
+      <div class="blur-card"><span class="mono">Personal training</span><b>₹ ••••</b><i>/month</i></div>
+      <div class="blur-card"><span class="mono">Couple</span><b>₹ ••••</b><i>each</i></div>
+      <div class="blur-card"><span class="mono">Day pass</span><b>₹ •••</b><i>2 hours</i></div>
+    </div>
+{% endif %}
+  </div>
+</section>
+
+<!-- ░░ FACILITY ░░ -->
+<section class="facility" id="facility">
+  <div class="wrap">
+    <header class="sec-head reveal">
+      <p class="kicker">05 — The floor</p>
+      <h2 class="h2">Have a look around.</h2>
+      <p class="sec-sub">Air conditioned, well lit, and equipped for both strength
+        and cardio work.</p>
+    </header>
+
+    <div class="gallery">
+      <figure class="gal gal-wide reveal">
+        <img draggable="false" src="{{ url_for('static', filename='img/real/room-wide.jpg') }}" alt="Falcon Fitness training floor with strength machines and treadmills" loading="lazy">
+        <figcaption><b>The main floor</b><span class="mono">Strength machines, benches and cardio</span></figcaption>
+      </figure>
+      <figure class="gal reveal">
+        <img draggable="false" src="{{ url_for('static', filename='img/real/equipment-arms.jpg') }}" alt="Leg press, Smith machine and treadmills at Falcon Fitness, Kestopur" loading="lazy">
+        <figcaption><b>Strength &amp; cardio</b><span class="mono">Leg press, Smith machine, treadmills</span></figcaption>
+      </figure>
+      <figure class="gal reveal">
+        <img draggable="false" src="{{ url_for('static', filename='img/real/equipment-rack.jpg') }}" alt="Dumbbell rack and plate-loaded equipment at Falcon Fitness" loading="lazy">
+        <figcaption><b>Free weights</b><span class="mono">Dumbbell rack and plate-loaded stations</span></figcaption>
+      </figure>
+      <figure class="gal reveal">
+        <img draggable="false" src="{{ url_for('static', filename='img/real/floor-open.jpg') }}" alt="Open training floor with treadmills and cable stations at Falcon Fitness Kestopur" loading="lazy">
+        <figcaption><b>Cardio &amp; conditioning</b><span class="mono">Treadmills, cycle and open floor</span></figcaption>
+      </figure>
+      <figure class="gal reveal">
+        <img draggable="false" src="{{ url_for('static', filename='img/real/community.jpg') }}" alt="Members training together at Falcon Fitness during a club celebration" loading="lazy">
+        <figcaption><b>The members</b><span class="mono">Celebration day on the floor</span></figcaption>
+      </figure>
+      <figure class="gal reveal">
+        <img draggable="false" src="{{ url_for('static', filename='img/real/strength-zone.jpg') }}" alt="Leg press and strength machines at Falcon Fitness Kestopur" loading="lazy">
+        <figcaption><b>Strength zone</b><span class="mono">Leg press, cable stack, benches</span></figcaption>
+      </figure>
+    </div>
+
+    <div class="amenities reveal">
+      <div class="amenity"><span class="mono">01</span><b>Air conditioned</b><p>Comfortable through the whole session.</p></div>
+      <div class="amenity"><span class="mono">02</span><b>Water purifier</b><p>Filtered drinking water on site.</p></div>
+      <div class="amenity"><span class="mono">03</span><b>Clean bathroom</b><p>Maintained and checked daily.</p></div>
+      <div class="amenity"><span class="mono">04</span><b>Free parking</b><p>Park at the building.</p></div>
+      <div class="amenity"><span class="mono">05</span><b>Hygienic &amp; safe</b><p>Sanitised equipment and surfaces.</p></div>
+      <div class="amenity"><span class="mono">06</span><b>Unisex</b><p>A multigym club for everyone.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ░░ TRAINER ░░ -->
+<section class="trainer" id="trainer">
+  <div class="wrap trainer-grid">
+    <figure class="trainer-photo reveal">
+      <img draggable="false" src="{{ url_for('static', filename='img/real/trainer-sourav.jpg') }}"
+           alt="Sourav Das, owner and trainer at Falcon Fitness, Kestopur" loading="lazy">
+      <figcaption class="mono">Sourav Das · Owner &amp; Trainer</figcaption>
+    </figure>
+
+    <div class="trainer-copy reveal">
+      <p class="kicker">06 — Your trainer</p>
+      <h2 class="h2">The person who<br><em>actually coaches you.</em></h2>
+
+      <div class="trainer-card">
+        <div class="trainer-head">
+          <span class="trainer-mono mono">SD</span>
+          <div>
+            <h3>Sourav Das</h3>
+            <p class="trainer-role mono">Owner &amp; Trainer</p>
+          </div>
+        </div>
+
+        <p>Falcon Fitness is run by its owner, not a rotating shift of floor
+          staff. If you join, you deal with the same person every session —
+          the same person who opens the club, walks the floor, and writes your
+          programme.</p>
+
+        <p>Personal training is available one-to-one or as a duo, in blocks of
+          16 to 200 sessions. If you are new to training, start with a general
+          membership and we will get your form right before you add load.</p>
+
+        <div class="trainer-facts">
+          <div><span class="mono">Founder</span><b>Sourav Das</b></div>
+          <div><span class="mono">Established</span><b>15 August 2020</b></div>
+          <div><span class="mono">Coaching</span><b>1-to-1 &amp; duo PT</b></div>
+          <div><span class="mono">Club</span><b>Unisex · AC · Kestopur</b></div>
+        </div>
+
+        <div class="trainer-cta">
+          <a href="https://wa.me/{{ P.wa }}?text=Hi%20Sourav%2C%20I%27d%20like%20to%20ask%20about%20training%20at%20Falcon%20Fitness."
+             class="btn btn-primary" target="_blank" rel="noopener">Ask Sourav about PT</a>
+          <a href="tel:{{ P.trainer_phone | replace(' ','') }}" class="btn btn-ghost">Call the club</a>
+        </div>
+        <p class="trainer-mail mono">
+          Direct:
+          <a href="mailto:dinoalvez42@gmail.com">dinoalvez42@gmail.com</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ░░ TRANSFORMATIONS & TESTIMONIALS ░░ -->
+<section class="voices" id="reviews">
+  <div class="wrap">
+    <header class="sec-head reveal">
+      <p class="kicker">07 — Members</p>
+      <h2 class="h2">What members<br><em>actually say.</em></h2>
+      <p class="sec-sub">Reviews written by signed-in members and approved by the
+        owner before they appear here. Nothing on this page is written by us.</p>
+    </header>
+
+    <div class="voices-grid">
+      {% if reviews %}
+        {% for r in reviews %}
+          <figure class="voice reveal">
+            <div class="voice-stars" aria-label="{{ r.rating }} out of 5">
+              {% for i in range(5) %}<span class="{{ 'on' if i < r.rating }}">★</span>{% endfor %}
+            </div>
+            <blockquote>{{ r.body }}</blockquote>
+            <figcaption>
+              <b>{{ r.name }}</b>
+              <span class="mono">Member · {{ r.created_at[:10] }}</span>
+            </figcaption>
+          </figure>
+        {% endfor %}
+      {% else %}
+        <div class="voice-empty reveal">
+          <div class="voice-stars" aria-hidden="true"><span class="on">★</span></div>
+          <h3>No reviews published yet.</h3>
+          <p>Members can leave a review from their account page. Once the owner
+            approves it, it appears here — we will not invent testimonials to fill
+            the space.</p>
+          <p class="mono tiny">Trained here? <a href="/account">Sign in and write one.</a></p>
+        </div>
+      {% endif %}
+    </div>
+
+    <div class="voices-foot reveal">
+      <div class="voices-cta">
+        <h3>Train with us and tell the truth about it.</h3>
+        <p>If you are a member, your honest review helps the next person decide.
+          It costs you two minutes.</p>
+        <a href="/account" class="btn btn-primary">Write a review</a>
+      </div>
+
+      <div class="voices-google">
+        <p class="mono">Google reviews</p>
+        <p>We don't embed Google reviews — third-party scripts would break this
+          site's no-tracker, offline-ready design. Read them straight from the
+          source instead:</p>
+        <a href="{{ b.maps }}" target="_blank" rel="noopener" class="btn btn-ghost">
+          See Falcon Fitness on Google
+        </a>
+        <p class="mono tiny">Member success stories and journey photographs will
+          be added once we have the members' consent and their images.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ░░ VISIT / CONTACT ░░ -->
+<section class="join" id="visit">
+  <div class="wrap join-grid">
+    <div class="join-copy reveal">
+      <p class="kicker">08 — Visit</p>
+      <h2 class="h2">Come see the floor<br><em>before you join.</em></h2>
+      <p>Walk in during open hours for a look around, or send us a message and
+        we will tell you everything — plans, timings and rates. No card, no
+        commitment.</p>
+
+      <ul class="join-list">
+        <li><span class="mono">01</span> Visit the club and see the equipment</li>
+        <li><span class="mono">02</span> Talk to us about what you want to achieve</li>
+        <li><span class="mono">03</span> Choose the plan that suits you, then join</li>
+      </ul>
+
+      <div class="join-meta">
+        <div>
+          <span class="mono">Address</span>
+          <p>{{ P.addr }}</p>
+        </div>
+        <div>
+          <span class="mono">Call or WhatsApp</span>
+          <p><a href="tel:{{ P.phone1 | replace(' ','') }}">{{ P.phone1 }}</a><br>
+             <a href="tel:{{ P.phone2 | replace(' ','') }}">{{ P.phone2 }}</a></p>
+        </div>
+        <div>
+          <span class="mono">Instagram</span>
+          <p><a href="https://www.instagram.com/{{ P.insta }}/" target="_blank" rel="noopener">@{{ P.insta }}</a></p>
+        </div>
+        <div>
+          <span class="mono">Directions</span>
+          <p><a href="{{ P.maps }}" target="_blank" rel="noopener">Open in Google Maps</a></p>
+        </div>
+      </div>
+    </div>
+
+    <form class="join-form reveal" id="leadForm" novalidate>
+      <h3>Enquire now</h3>
+      <p class="form-intro">Tell us how to reach you and we will call back the same day.</p>
+
+      <label class="field"><span>Name</span>
+        <input type="text" name="name" id="leadName" required placeholder="Your name" autocomplete="name">
+      </label>
+      <label class="field"><span>Phone</span>
+        <input type="tel" name="phone" id="leadPhone" required placeholder="10-digit mobile number"
+               inputmode="numeric" autocomplete="tel">
+      </label>
+      <label class="field"><span>Email <i class="opt">optional</i></span>
+        <input type="email" name="email" id="leadEmail" placeholder="you@example.com" autocomplete="email">
+      </label>
+      <label class="field"><span>Interested in</span>
+        <select name="goal" id="leadGoal">
+          <option>General membership</option>
+          <option>Personal training (single)</option>
+          <option>Personal training (duo)</option>
+          <option>Couple package</option>
+          <option>Student package</option>
+          <option>Friends / group package</option>
+          <option>Day pass</option>
+          <option>Just want a look around</option>
+        </select>
+      </label>
+      <label class="field"><span>Anything we should know? <i class="opt">optional</i></span>
+        <textarea name="message" id="leadMessage" rows="2" placeholder="Old injuries, preferred timings…"></textarea>
+      </label>
+
+      <!-- honeypot: invisible to humans, catches bots -->
+      <div class="hp" aria-hidden="true">
+        <label>Leave this empty<input type="text" name="website" tabindex="-1" autocomplete="off"></label>
+      </div>
+      <input type="hidden" name="t" id="formTimestamp" value="">
+
+      <label class="consent">
+        <input type="checkbox" id="leadConsent" name="consent">
+        <span>I agree to be contacted by Falcon Fitness about my enquiry, and I have
+        read the <a href="/privacy">privacy policy</a>.</span>
+      </label>
+
+      <button class="btn btn-primary btn-block" type="submit">Send my enquiry</button>
+      <p class="form-note mono" id="leadNote">We only use your number to reply about your enquiry.</p>
+    </form>
+  </div>
+</section>
+
+</main>
+
+<!-- ░░ FOOTER ░░ -->
+<footer class="foot">
+  <div class="wrap foot-grid">
+    <div class="foot-brand">
+      <img draggable="false" src="{{ url_for('static', filename='img/falcon-cream.png') }}" alt="Falcon Fitness">
+      <p>{{ P.tagline }}<br>{{ P.line2 }}<br><br>{{ P.addr }}</p>
+    </div>
+    <div class="foot-col">
+      <h4>Train</h4>
+      <a href="#program" data-nav>Program builder</a>
+      <a href="#tools" data-nav>Floor tools</a>
+      <a href="#membership" data-nav>Membership</a>
+    </div>
+    <div class="foot-col">
+      <h4>Club</h4>
+      <a href="#facility" data-nav>Facility</a>
+      <a href="#trainer" data-nav>Trainer</a>
+      <a href="#reviews" data-nav>Reviews</a>
+      <a href="#visit" data-nav>Enquire now</a>
+      <a href="{{ P.maps }}" target="_blank" rel="noopener">Directions</a>
+      <a href="/login">Member / admin sign in</a>
+    </div>
+    <div class="foot-col">
+      <h4>Contact</h4>
+      <a href="tel:{{ P.phone1 | replace(' ','') }}">{{ P.phone1 }}</a>
+      <a href="tel:{{ P.phone2 | replace(' ','') }}">{{ P.phone2 }}</a>
+      <a href="https://www.instagram.com/{{ P.insta }}/" target="_blank" rel="noopener">@{{ P.insta }}</a>
+    </div>
+  </div>
+  <div class="wrap foot-base">
+    <span class="mono">© {{ today }} Falcon Fitness · Kestopur, Kolkata</span>
+    <span class="mono">
+      <a href="/privacy">Privacy</a> ·
+      <a href="/terms">Terms</a>
+    </span>
+  </div>
+</footer>
+
+<!-- ░░ COMMAND PALETTE ░░ -->
+<div class="cmdk" id="cmdk" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Command palette">
+  <div class="cmdk-scrim" data-cmdk-close></div>
+  <div class="cmdk-card">
+    <div class="cmdk-input-row">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M16.5 16.5 21 21"/></svg>
+      <input id="cmdkInput" placeholder="Jump to a section or run a tool…" autocomplete="off">
+      <kbd>esc</kbd>
+    </div>
+    <ul class="cmdk-list" id="cmdkList"></ul>
+    <div class="cmdk-foot mono"><span>↑ ↓ navigate</span><span>↵ select</span></div>
+  </div>
+</div>
+
+<div class="toasts" id="toasts" aria-live="polite"></div>
+
+<script src="{{ url_for('static', filename='js/app.js') }}?v={{ av('js/app.js') }}"></script>
+</body>
+</html>

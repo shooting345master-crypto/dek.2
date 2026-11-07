@@ -1,0 +1,60 @@
+{% extends "shell.html" %}
+{% block title %}Log in — Falcon Fitness{% endblock %}
+{% block body %}
+<main class="auth wrap">
+  <div class="auth-card">
+    {% if admin_door %}
+      <p class="kicker">Club owner</p>
+      <h1 class="h2">Admin sign in</h1>
+      <p class="auth-sub">This door is for the owner only. Members should use the
+        <a href="/login">member sign-in</a>.</p>
+    {% else %}
+      <p class="kicker">Members</p>
+      <h1 class="h2">Member sign in</h1>
+      <p class="auth-sub">See the price list, your membership dates, your payments
+        and your attendance.<br>
+        Club owner? Use the <a href="/admin/login">admin sign-in</a>.</p>
+    {% endif %}
+
+    {% if error %}<p class="auth-err">{{ error }}</p>{% endif %}
+
+    <form method="post" novalidate>
+      <input type="hidden" name="_csrf" value="{{ csrf }}">
+      <label class="field"><span>Email</span>
+        <input type="email" name="email" required autocomplete="username"
+               placeholder="you@example.com" autofocus>
+      </label>
+      <label class="field"><span>Password</span>
+        <input type="password" name="password" required autocomplete="current-password"
+               placeholder="Your password">
+      </label>
+      <button class="btn btn-primary btn-block" type="submit">Sign in</button>
+    </form>
+
+    {% if not admin_door %}
+      <p class="auth-foot mono">
+        <b>Paid at the club?</b> <a href="/register">Register your membership</a>
+        with your receipt to get a digital card.
+      </p>
+    {% endif %}
+    <p class="auth-foot mono">
+      Not a member yet? <a href="/#visit">Enquire now</a> and we'll set you up.
+    </p>
+    {% if admin_door %}
+      <p class="auth-foot mono auth-help">
+        Admin password was printed in the terminal on first run and saved to
+        <code>data/ADMIN-FIRST-LOGIN.txt</code>.<br>
+        Lost it? Run <code>python3 reset-password.py</code>.
+      </p>
+    {% else %}
+      <p class="auth-foot mono auth-help">
+        Members: your password was given to you when you joined.<br>
+        Forgotten it? Call the club on {{ b.phone }}.
+      </p>
+    {% endif %}
+    <p class="auth-foot mono">
+      <a href="/">← Back to the site</a>
+    </p>
+  </div>
+</main>
+{% endblock %}

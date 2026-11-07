@@ -1,0 +1,30 @@
+# ---- Render blueprint (free tier, no credit card) ---------------------------
+# Push this repo to GitHub, then: Render → New → Blueprint → pick the repo.
+services:
+  - type: web
+    name: falcon-fitness
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    plan: free
+    # Render has no India region. singapore is the closest available.
+    # For an Indian datacentre use Fly.io "bom" (Mumbai) or an Indian host.
+    region: singapore
+    healthCheckPath: /healthz
+    autoDeploy: true
+    envVars:
+      # WARNING: Render's free tier has no persistent disk. The database is
+      # wiped on every redeploy, restart and idle spin-down. That is acceptable
+      # for trying the site out, never for real members. For real use either
+      # upgrade to a paid instance with a disk mounted at /app/data, or stay on
+      # the VPS where the database is a normal file on disk.
+      - key: FALCON_DB_PATH
+        value: /app/data/falcon.db
+      - key: PYTHONUNBUFFERED
+        value: "1"
+      - key: FALCON_RATE_PER_HOUR
+        value: "12"
+      # Set these in the Render dashboard (Environment tab) to receive
+      # enquiry emails — do NOT commit real passwords to this file:
+      #   FALCON_SMTP_HOST, FALCON_SMTP_PORT, FALCON_SMTP_USER,
+      #   FALCON_SMTP_PASS, FALCON_MAIL_FROM, FALCON_MAIL_TO,
+      #   FALCON_EXPORT_TOKEN, FALCON_IP_SALT

@@ -1,0 +1,49 @@
+{% set P = {'phone1':'+91 98746 05022','phone2':'+91 70037 24906','insta':'falconfitness.kolkata'} %}
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Session expired — Falcon Fitness</title>
+<meta name="robots" content="noindex">
+<link rel="icon" type="image/png" href="{{ url_for('static', filename='img/favicon-crest.png') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v={{ av('css/style.css') }}">
+</head>
+<body class="legal-page">
+<div class="grain" aria-hidden="true"></div>
+<div class="vignette" aria-hidden="true"></div>
+
+<header class="nav is-stuck">
+  <div class="nav-inner">
+    <a class="brand" href="/" aria-label="Falcon Fitness home">
+      <img draggable="false" src="{{ url_for('static', filename='img/falcon-crest-cream.png') }}" alt="" class="brand-mark">
+      <span class="brand-type"><b>FALCON</b><i>FITNESS</i></span>
+    </a>
+    <nav class="nav-links" aria-label="Primary">
+      <a href="/">Home</a>
+      <a href="/#membership">Membership</a>
+      <a href="/#visit">Visit</a>
+    </nav>
+  </div>
+</header>
+
+<main class="legal wrap error-page">
+  <p class="kicker">400</p>
+  <h1 class="h2">That request didn't go through.</h1>
+  <p class="legal-lead">{{ message }}</p>
+  <div class="error-links">
+    <a class="btn btn-primary" href="javascript:history.back()">Go back</a>
+    <a class="btn btn-ghost" href="/#membership">See memberships</a>
+    <a class="btn btn-ghost" href="/#visit">Enquire now</a>
+  </div>
+  <p class="legal-foot mono">Need to speak to someone? Call {{ b.phone }}.</p>
+</main>
+
+<footer class="foot">
+  <div class="wrap foot-base">
+    <span class="mono">© {{ today }} {{ b.name }} · Kestopur, Kolkata</span>
+    <span class="mono"><a href="/">Home</a></span>
+  </div>
+</footer>
+</body>
+</html>

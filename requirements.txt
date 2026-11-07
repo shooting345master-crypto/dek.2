@@ -1,0 +1,14 @@
+Flask>=3.0,<4
+gunicorn>=21.2
+
+# Image screening for uploaded payment receipts (receipt_check.py).
+# Pillow reads JPG/PNG/WEBP/GIF/BMP/TIFF; pillow-heif adds iPhone HEIC photos.
+Pillow>=10.0
+pillow-heif>=0.13 ; python_version >= "3.8"
+
+# OPTIONAL — reads the amount and date off the receipt automatically.
+# Also needs the system tesseract binary:  pkg install tesseract  (Termux)
+#                                         brew install tesseract  (Mac)
+#                                         apt install tesseract-ocr  (Linux)
+# The site runs fine without it; the admin panel says so plainly.
+# pytesseract>=0.3.10
